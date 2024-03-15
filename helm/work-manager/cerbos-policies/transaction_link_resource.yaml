@@ -1,0 +1,15 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: transaction_link
+  rules:
+    - actions: ["view"]
+      roles:
+        - transaction-submitter
+        - transaction-admin
+      effect: EFFECT_ALLOW
+
+    - actions: ["create", "delete"]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW

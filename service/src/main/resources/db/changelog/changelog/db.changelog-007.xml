@@ -1,0 +1,67 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create_note_type_table" author="jcsuarezm">
+        <createTable tableName="note_type">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_note_type"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_note_type_name"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_foreign_key_to_note_table" author="jcsuarezm">
+        <delete tableName="note_document"/>
+        <delete tableName="transaction_note"/>
+        <delete tableName="note"/>
+        <addColumn tableName="note">
+            <column name="note_type_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint constraintName="fk_note_note_type"
+                                 baseTableName="note" baseColumnNames="note_type_id"
+                                 referencedTableName="note_type" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="add_note_types_note_table" author="jcsuarezm">
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        </sql>
+
+        <insert tableName="note_type">
+            <column name="id" valueComputed="uuid_generate_v4()" />
+            <column name="name" value="General Note" />
+        </insert>
+
+        <insert tableName="note_type">
+            <column name="id" valueComputed="uuid_generate_v4()" />
+            <column name="name" value="Email" />
+        </insert>
+
+        <insert tableName="note_type">
+            <column name="id" valueComputed="uuid_generate_v4()" />
+            <column name="name" value="Phone Call" />
+        </insert>
+
+        <insert tableName="note_type">
+            <column name="id" valueComputed="uuid_generate_v4()" />
+            <column name="name" value="Meeting Notes" />
+        </insert>
+
+        <sql>
+            DROP EXTENSION IF EXISTS "uuid-ossp";
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

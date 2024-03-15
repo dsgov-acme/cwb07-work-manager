@@ -1,0 +1,88 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="modify_note_table_to_add_uid_column" author="jgiraldo" >
+        <addColumn tableName="note">
+            <column name="uid" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="populate_uid_column_in_note_table" author="jgiraldo" >
+        <preConditions onFail="MARK_RAN">
+            <dbms type="postgresql"/>
+        </preConditions>
+        <sql>
+            CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        </sql>
+        <update tableName="note">
+            <column name="uid" valueComputed="uuid_generate_v4()" />
+        </update>
+        <sql>
+            DROP EXTENSION IF EXISTS "uuid-ossp";
+        </sql>
+    </changeSet>
+    <changeSet id="add_note_uid_to_note_document_and_transaction_note" author="jgiraldo" >
+        <addNotNullConstraint tableName="note" columnName="uid" />
+        <addColumn tableName="note_document">
+            <column name="note_uid" type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="transaction_note">
+            <column name="note_uid" type="varchar(255)" />
+        </addColumn>
+        <sql>
+            UPDATE note_document
+            SET note_uid = (
+                SELECT NOTE.UID
+                FROM note
+                WHERE note_document.note_id = note.id
+            );
+        </sql>
+        <sql>
+            UPDATE transaction_note
+            SET note_uid = (
+                SELECT NOTE.UID
+                FROM note
+                WHERE transaction_note.id = note.id
+            );
+        </sql>
+        <addNotNullConstraint tableName="note_document" columnName="note_uid" />
+        <addNotNullConstraint tableName="transaction_note" columnName="note_uid" />
+    </changeSet>
+    <changeSet id="remove_foreign_keys_to_note_table" author="jgiraldo">
+        <dropForeignKeyConstraint baseTableName="note_document" constraintName="fk_note_document_note_id" />
+        <dropForeignKeyConstraint baseTableName="transaction_note" constraintName="fk_transaction_note_note_id" />
+    </changeSet>
+    <changeSet id="modify_note_table_pk" author="jgiraldo">
+        <dropPrimaryKey tableName="note" />
+        <addPrimaryKey tableName="note" columnNames="uid" />
+    </changeSet>
+    <changeSet id="remove_note_id_column_from_note" author="jgiraldo">
+        <dropColumn tableName="note" columnName="id" />
+    </changeSet>
+    <changeSet id="rename_note_uid_to_id" author="jgiraldo">
+        <renameColumn tableName="note" oldColumnName="uid" newColumnName="id" />
+    </changeSet>
+    <changeSet id="add_fk_note_document_and_transaction_note" author="jgiraldo">
+        <addForeignKeyConstraint baseTableName="note_document" constraintName="fk_note_document_note_id" referencedTableName="note" referencedColumnNames="id" baseColumnNames="note_uid" />
+        <addForeignKeyConstraint baseTableName="transaction_note" constraintName="fk_transaction_note_note_id" referencedTableName="note" referencedColumnNames="id" baseColumnNames="note_uid" />
+    </changeSet>
+    <changeSet id="modify_note_document_pk" author="jgiraldo">
+        <dropPrimaryKey tableName="note_document" />
+        <addPrimaryKey tableName="note_document" columnNames="note_uid, document_id" />
+    </changeSet>
+    <changeSet id="modify_transaction_note_pk" author="jgiraldo">
+        <dropPrimaryKey tableName="transaction_note" />
+        <addPrimaryKey tableName="transaction_note" columnNames="note_uid" />
+    </changeSet>
+    <changeSet id="remove_transaction_note_and_note_document_id_column" author="jgiraldo">
+        <dropColumn tableName="transaction_note" columnName="id" />
+        <dropColumn tableName="note_document" columnName="note_id" />
+    </changeSet>
+    <changeSet id="rename_note_document_note_uid_column" author="jgiraldo">
+        <renameColumn tableName="note_document" oldColumnName="note_uid" newColumnName="note_id" />
+        <renameColumn tableName="transaction_note" oldColumnName="note_uid" newColumnName="id" />
+    </changeSet>
+</databaseChangeLog>

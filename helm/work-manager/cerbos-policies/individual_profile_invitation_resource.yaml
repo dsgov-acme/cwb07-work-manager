@@ -1,0 +1,25 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: individual_profile_invitation
+  rules:
+    - actions: ["read"]
+      roles:
+        - agency-profile-admin
+        - individual-admin
+        - individual-user
+      effect: EFFECT_ALLOW
+    - actions: [ "claim" ]
+      roles:
+        - public-profile-user
+      effect: EFFECT_ALLOW
+    - actions: ["invite"]
+      roles:
+        - agency-profile-admin
+        - individual-admin
+      effect: EFFECT_ALLOW
+    - actions: [ "delete" ]
+      roles:
+        - agency-profile-admin
+        - individual-admin
+      effect: EFFECT_ALLOW

@@ -1,0 +1,12 @@
+{
+  "key": "Neighbor",
+  "name": "Neighbor",
+  "attributes": [
+    {
+      "name": "name",
+      "type": "String",
+      "attributeConfigurations": []
+    }
+  ],
+  "computedAttributes": []
+}

@@ -1,0 +1,13 @@
+{
+  "key": "GrandParent",
+  "name": "GrandParent",
+  "attributes": [
+    {
+      "name": "child",
+      "type": "DynamicEntity",
+      "entitySchema": "Parent",
+      "attributeConfigurations": []
+    }
+  ],
+  "computedAttributes": []
+}

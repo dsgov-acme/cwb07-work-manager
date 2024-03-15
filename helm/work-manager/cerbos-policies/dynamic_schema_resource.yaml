@@ -1,0 +1,16 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: dynamic_schema
+  rules:
+    - actions: ["view"]
+      roles:
+        - transaction-submitter
+        - transaction-admin
+        - transaction-config-admin
+      effect: EFFECT_ALLOW
+
+    - actions: ["create", "update","delete"]
+      roles:
+        - transaction-config-admin
+      effect: EFFECT_ALLOW

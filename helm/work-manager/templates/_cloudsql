@@ -1,0 +1,50 @@
+# To connect to Cloud SQL securely, leverage the Cloud SQL Proxy as a sidecar.
+# Ref: https://cloud.google.com/sql/docs/postgres/connect-kubernetes-engine#run_the_in_a_sidecar_pattern
+{{- define "work-manager.cloudsql.sidecar" -}}
+- name: cloud-sql-proxy
+  image: gcr.io/cloudsql-docker/gce-proxy:1.33.5-buster
+  command: ["/bin/sh", "-c"]
+  args:
+    - |
+      INSTANCES=$(cat /opt/data/vars.env)
+      echo "INSTANCES=$INSTANCES"
+      /cloud_sql_proxy \
+        -enable_iam_login \
+        -log_debug_stdout \
+        -ip_address_types=PRIVATE \
+        -instances=$INSTANCES=tcp:5432
+  volumeMounts:
+    - name: data
+      mountPath: /opt/data
+  securityContext:
+    runAsNonRoot: true
+{{- end }}
+
+{{- define "work-manager.cloudsql.initContainer" -}}
+initContainers:
+  - name: gcloud-sql-init
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+        INSTANCES=$(gcloud sql instances list --format='value(connectionName)')
+        echo "$INSTANCES" > /opt/data/vars.env
+    volumeMounts:
+      - name: data
+        mountPath: /opt/data
+{{- end }}
+
+{{- define "work-manager.cloudsql.volume" -}}
+volumes:
+  - name: data
+    emptyDir: {}
+  - name: sock
+    emptyDir: {}
+  - name: config
+    configMap:
+      name: work-manager-cerbos-config
+  - name: policies
+    configMap:
+      name: work-manager-cerbos-policies
+{{- end }}

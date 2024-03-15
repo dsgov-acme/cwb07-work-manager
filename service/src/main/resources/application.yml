@@ -1,0 +1,127 @@
+server:
+  servlet:
+    context-path: /wm
+  forward-headers-strategy: framework
+
+spring:
+  config:
+    import: sm://
+  sleuth:
+    sampler:
+      probability: ${OTEL_SAMPLER_PROBABILITY:1.0} # Valid values [0.0 - 1.0]
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/changelog-master.xml
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_CONNECTION_URL}
+    user: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jackson:
+    serialization:
+      write-dates-with-zone-id: true
+      write-dates-as-timestamps: false
+    deserialization:
+      adjust_dates_to_context_time-zone: false
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        type:
+          json_format_mapper: io.nuvalence.workmanager.service.mapper.JacksonJsonFormatMapperCustom
+  datasource:
+    # url: jdbc:postgresql://localhost:5438/workmanager
+    url: ${DB_CONNECTION_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  cloud:
+    gcp:
+      project-id: ${GCP_PROJECT_ID}
+      vertex-ai:
+        location: ${VERTEX_AI_LOCATION}
+      pubsub:
+        emulator-host: ${PUBSUB_EMULATOR_HOST:false}
+        emulator-enabled: ${PUBSUB_EMULATOR_ENABLED:false}
+      sql:
+        enabled: false
+      firestore:
+        enabled: false
+
+management:
+  endpoints:
+    web:
+      cors:
+        allow-credentials: true
+        allowed-origins: ${ALLOWED_ORIGINS}
+        allowed-methods: "GET,POST,PUT,DELETE,PATCH,OPTIONS"
+        allowed-headers: "*"
+      exposure:
+        include: "*"
+
+logging:
+  level:
+    io:
+      swagger:
+        models:
+          parameters:
+            AbstractSerializableParameter: ERROR
+
+springfox:
+  documentation:
+    enabled: false
+
+camunda:
+  bpm:
+    enabled: true
+    default-serialization-format: application/json
+    history-level: auto
+    history-level-default: audit
+    job-execution:
+      enabled: true
+      deployment-aware: false
+      core-pool-size: 3
+      max-pool-size: 20
+    metrics:
+      enabled: false
+      db-reporter-activate: false
+    admin-user:
+      id: admin
+      password: admin
+      firstName: Admin
+
+auth:
+  token-filter:
+    self-signed:
+      issuer: ${TOKEN_ISSUER}
+      public-key: ${SELF_SIGN_PUBLIC_KEY}
+  token-client:
+    self-signed:
+      issuer: ${TOKEN_ISSUER}
+      private-key: ${SELF_SIGN_PRIVATE_KEY}
+      roles: "as:event-reporter, um:reader, um:application-client, ns:notification-sender, dm:document-reviewer"
+
+cerbos:
+  uri: ${CERBOS_URI}
+
+userManagement:
+  baseUrl: ${USER_MANAGEMENT_BASE_URL}
+
+dashboard:
+  url: ${DASHBOARD_URL}
+
+invitation:
+  individual:
+    claim:
+      url: ${INDIVIDUAL_PROFILE_CLAIM_URL}
+  employer:
+    claim:
+      url: ${EMPLOYER_PROFILE_CLAIM_URL}
+
+events:
+  subscriber:
+    enabled: false
+  publisher:
+    topics: ${PUBLISHER_TOPICS}

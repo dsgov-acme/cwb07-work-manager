@@ -1,0 +1,18 @@
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="priority-rank-range-increase" author="dortega">
+        <modifyDataType tableName="transaction" columnName="priority" newDataType="numeric(2)" />
+        <update tableName="transaction">
+            <column name="priority" valueComputed="priority * 10" />
+        </update>
+    </changeSet>
+    <changeSet id="add-transaction-definition-set-key-to-transaction-definition" author="dortega">
+        <addColumn tableName="transaction_definition">
+            <column name="transaction_definition_set_key" type="varchar(255)" />
+        </addColumn>
+        <dropColumn tableName="transaction_definition" columnName="transaction_definition_set_id" />
+    </changeSet>
+</databaseChangeLog>

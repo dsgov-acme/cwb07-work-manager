@@ -1,0 +1,38 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create-profile-invitation-table" author="jgiraldo">
+        <createTable tableName="profile_invitation">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="profile_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_access_level" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="expires" type="DATETIME"/>
+            <column name="claimed" type="boolean"/>
+            <column name="email" type="varchar(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="add_created_timestamp_column" author="jgiraldo">
+        <addColumn tableName="profile_invitation">
+            <column name="created_timestamp" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="add_claimed_timestamp_column" author="jgiraldo">
+        <addColumn tableName="profile_invitation">
+            <column name="claimed_timestamp" type="DATETIME" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

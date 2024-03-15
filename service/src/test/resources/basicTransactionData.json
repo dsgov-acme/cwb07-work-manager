@@ -1,0 +1,33 @@
+{
+  "firstName": "myFirstName",
+  "lastName": "myLastName",
+  "email": "email@something.com",
+  "countryCode": "CAN",
+  "address": "myAddress",
+  "employmentStatus": "myEmploymentStatus",
+  "company": "myCompany",
+  "isMailingAddressNeeded": true,
+  "age": 30,
+  "document": {
+    "documentId": "f84b20e8-7a64-431f-ad94-440ca0c4b7c1"
+  },
+  "dateOfBirth": "1993-12-21",
+  "officeInfo": {
+    "city": "myCity",
+    "address": "myOfficeAddress"
+  },
+  "officeInfoList": [
+    {
+      "city": "myCity",
+      "address": "myOfficeAddress"
+    },
+    {
+      "city": "myCity2",
+      "address": "myOfficeAddress2"
+    }
+  ],
+  "strings": [
+    "string1",
+    "string2"
+  ]
+}

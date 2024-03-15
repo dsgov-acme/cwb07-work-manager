@@ -1,0 +1,45 @@
+namespace: "cwb07"
+
+postgres:
+  enabled: false
+  namespace: "cwb07"
+
+replicaCount: 1
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+  targetMemoryUtilizationPercentage: 80
+
+resources:
+  workManager:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 1024Mi
+  cerbos:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      memory: 1024Mi
+
+image:
+  pullPolicy: "IfNotPresent"
+  repository: "work-manager"
+  tag: "latest"
+
+net:
+  applicationPort: 8080
+  servicePort: 80
+  contextPath: "/wm"
+  readinessProbe:
+    path: "/actuator/health"
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+    failureThreshold: 10

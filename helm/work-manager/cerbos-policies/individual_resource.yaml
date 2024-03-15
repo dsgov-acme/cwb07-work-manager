@@ -1,0 +1,46 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  importDerivedRoles:
+    - profile-roles
+  resource: individual_profile
+  rules:
+    - actions: ["view"]
+      roles:
+        - agency-profile-admin
+        - individual-admin
+        - individual-user
+      effect: EFFECT_ALLOW
+    - actions: [ "update" ]
+      roles:
+        - agency-profile-admin
+        - individual-admin
+      effect: EFFECT_ALLOW
+    - actions: ["create"]
+      roles:
+        - agency-profile-admin
+      effect: EFFECT_ALLOW
+
+    # related conversations
+    - actions: ["view-conversations"]
+      roles:
+        - agency-profile-admin
+      derivedRoles: 
+        - profile-reader
+      effect: EFFECT_ALLOW
+
+    - actions: ["create-conversations"]
+      roles:
+        - agency-profile-admin
+      derivedRoles: 
+        - profile-admin
+      effect: EFFECT_ALLOW
+
+    - actions: ["reply-conversations"]
+      roles:
+        - agency-profile-admin
+      derivedRoles: 
+        - profile-writer
+        - profile-admin
+      effect: EFFECT_ALLOW
+

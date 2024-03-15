@@ -1,0 +1,26 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="update_transaction_definition_id_values" author="jgiraldo">
+        <sql>
+            UPDATE form_configuration
+            SET transaction_definition_id = (
+                SELECT transaction_definition.id
+                FROM transaction_definition
+                WHERE form_configuration.transaction_definition_key = transaction_definition.transaction_definition_key
+            );
+
+        </sql>
+    </changeSet>
+    <changeSet id="add_column_transaction_is_completed" author="jgiraldo">
+        <addColumn tableName="transaction">
+            <column name="is_completed" type="BOOLEAN">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
+

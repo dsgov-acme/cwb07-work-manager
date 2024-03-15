@@ -1,0 +1,18 @@
+{
+  "key": "BasicSchema",
+  "name": "Basic schema",
+  "attributes": [
+    {
+      "name": "personalInformation",
+      "type": "DynamicEntity",
+      "entitySchema": "PersonalInformation",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "jobInfo",
+      "type": "DynamicEntity",
+      "entitySchema": "JobInfo",
+      "attributeConfigurations": []
+    }
+  ]
+}

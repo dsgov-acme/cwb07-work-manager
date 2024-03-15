@@ -1,0 +1,129 @@
+apiVersion: skaffold/v4beta1
+kind: Config
+metadata:
+  name: work-manager
+profiles:
+  - name: local
+    build:
+      googleCloudBuild:
+        projectId: cwb07-services
+        gradleImage: gradle:8.2.1-jdk17-alpine
+      artifacts:
+        - image: us-east4-docker.pkg.dev/cwb07-services/application/cwb07-work-manager
+          jib:
+            type: gradle
+            project: service
+            args:
+              - "-Djib.container.environment=SPRING_PROFILES_ACTIVE=cloud"
+    deploy:
+      helm:
+        releases:
+        - name: cwb07-work-manager
+          createNamespace: true
+          chartPath: helm/work-manager
+          # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
+          setValueTemplates:
+            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+          setValues:
+            environment: local
+          valuesFiles:
+            - helm/work-manager/values.yaml
+            - helm/work-manager/local.yaml
+  - name: minikube
+    activation:
+      - kubeContext: minikube
+    build:
+      artifacts:
+        - image: work-manager
+          jib:
+            type: gradle
+            project: service
+            args:
+              - "-Djib.container.environment=SPRING_PROFILES_ACTIVE=local"
+    manifests:
+      helm:
+        releases:
+          - name: work-manager
+            createNamespace: true
+            chartPath: helm/work-manager
+            valuesFiles:
+              - helm/work-manager/values.yaml
+              - helm/work-manager/local.yaml
+            setValues:
+              environment: local
+              net.readinessProbe.initialDelaySeconds: 60
+              pullPolicy: IfNotPresent
+              postgres.enabled: "true"
+            setValueTemplates:
+              image.repository: work-manager
+              image.tag: work-manager
+    deploy:
+      statusCheckDeadlineSeconds: 300
+      tolerateFailuresUntilDeadline: true
+      helm: {}
+    portForward:
+      - resourceType: service
+        resourceName: work-manager
+        namespace: cwb07
+        port: 80
+        localPort: 8080
+      - resourceType: service
+        resourceName: work-manager-postgres
+        namespace: cwb07
+        port: 5432
+        localPort: 5438
+  - name: dev
+    build:
+      googleCloudBuild:
+        projectId: cwb07-services
+        gradleImage: gradle:8.2.1-jdk17-alpine
+      artifacts:
+        - image: us-east4-docker.pkg.dev/cwb07-services/application/cwb07-work-manager
+          jib:
+            type: gradle
+            project: service
+            args:
+              - "-Djib.container.environment=SPRING_PROFILES_ACTIVE=cloud"
+    deploy:
+      helm:
+        releases:
+        - name: cwb07-work-manager
+          createNamespace: true
+          chartPath: helm/work-manager
+          # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
+          setValueTemplates:
+            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+          setValues:
+            environment: dev
+          valuesFiles:
+            - helm/work-manager/values.yaml
+            - helm/work-manager/dev.yaml
+  - name: prod
+    build:
+      googleCloudBuild:
+        projectId: cwb07-services
+        gradleImage: gradle:8.2.1-jdk17-alpine
+      artifacts:
+        - image: us-east4-docker.pkg.dev/cwb07-services/application/cwb07-work-manager
+          jib:
+            type: gradle
+            project: service
+            args:
+              - "-Djib.container.environment=SPRING_PROFILES_ACTIVE=cloud"
+    deploy:
+      helm:
+        releases:
+        - name: cwb07-work-manager
+          createNamespace: true
+          chartPath: helm/work-manager
+          # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
+          setValueTemplates:
+            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+          setValues:
+            environment: prod
+          valuesFiles:
+            - helm/work-manager/values.yaml
+            - helm/work-manager/prod.yaml

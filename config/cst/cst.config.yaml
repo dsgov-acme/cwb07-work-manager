@@ -1,0 +1,7 @@
+# Container Structure Tests for Skaffold
+# https://github.com/GoogleContainerTools/container-structure-test
+schemaVersion: 2.0.0
+fileExistenceTests:
+  - name: 'application.jar'
+    path: '/'
+    shouldExist: true

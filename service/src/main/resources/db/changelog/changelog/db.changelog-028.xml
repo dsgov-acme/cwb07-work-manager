@@ -1,0 +1,13 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="change-data-to-JSONB" author="acalderon">
+        <sql>
+            ALTER TABLE transaction ALTER COLUMN data TYPE JSONB USING data::JSONB;
+        </sql>
+
+    </changeSet>
+</databaseChangeLog>

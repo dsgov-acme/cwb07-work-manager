@@ -1,0 +1,11 @@
+{
+  "firstName": "myFirstName",
+  "lastName": "myLastName",
+  "email": "email@something.com",
+  "address": "myAddress",
+  "employmentStatus": "myEmploymentStatus",
+  "company": "myCompany",
+  "isMailingAddressNeeded": true,
+  "age": "50",
+  "someDate": "2023-11-20"
+}

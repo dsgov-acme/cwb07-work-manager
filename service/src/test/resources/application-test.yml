@@ -1,0 +1,107 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;
+    username: sa
+    password: sa
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  liquibase:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;INIT=CREATE TYPE IF NOT EXISTS "JSONB" AS text;
+    user: sa
+    password: sa
+  cloud:
+    gcp:
+      sql:
+        enabled: false
+      firestore:
+        enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+camunda:
+  bpm:
+    admin-user:
+      id: admin
+      password: admin
+      firstName: Admin
+
+# Test keys for unit test execution. Do not use these key for production workloads.
+auth:
+  token-filter:
+    self-signed:
+      issuer: dsgov
+      public-key: |-
+        -----BEGIN PUBLIC KEY-----
+        MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCjRRAY61hX6KKu9I6PTmKTYv4z
+        kVFUHVvDoDNheVEskrNyEMVJH7FMKBTxRUWgGAWwtPUQ5S+2OowJzBpHl+M1D3HY
+        0PLznTmqwZtlOj+NG4+J+Ndu6APBJFLndlWBJrFAjQW8bJtm78I3eyjZeezCFvhG
+        iX882R81aatL0qUqtQIDAQAB
+        -----END PUBLIC KEY-----
+
+
+  token-client:
+    self-signed:
+      issuer: dsgov
+      private-key: |-
+        -----BEGIN RSA PRIVATE KEY-----
+        MIICXAIBAAKBgQCjRRAY61hX6KKu9I6PTmKTYv4zkVFUHVvDoDNheVEskrNyEMVJ
+        H7FMKBTxRUWgGAWwtPUQ5S+2OowJzBpHl+M1D3HY0PLznTmqwZtlOj+NG4+J+Ndu
+        6APBJFLndlWBJrFAjQW8bJtm78I3eyjZeezCFvhGiX882R81aatL0qUqtQIDAQAB
+        AoGAaRYcpE1mUT605zMVRvvGyuKehwZzeFZlJ+bG62gwbSYHRdWxhb1WWpQ51okl
+        pUOQ9gmi6rr5GKtaUzwBdi8213pSoCyY1yuJ6c5HHHP7ZIlbBmhMZpIcIVfVcdB+
+        SOvRnE+JB+ByVGIcTzByFnPIiqjiuvX3/WAPzKvygEPLYUkCQQDamlnLFPDuFwEx
+        Z6RYsA5c1AaQejaYU8bKV2OWe8CsPbYYb7UYPf4C+uRffl+a/mYg/uEJBxSS8/Pc
+        fRH54pw3AkEAvzNpz4UQxh4zGK/iElG/HqxFAs01/WaF1xhO7er0bYVxhGr3jbDa
+        TVsCrYsYHPY1sY6C4iY00wi4Jvj2srvycwJAWd0LvqU8KdQBJIsjj2XIcbajgC8N
+        VG9UEAf+o3T6DpRL0B3Tx0RssFLtIKh1quSbnULJxYlIluR8Qg6UHjJe3wJAJmBJ
+        Yo+QuFMjalcTBx5FQADPsSpDJeNIBc4pOXOpL7pS+IMHwPa4OkKEHRUH9/gq+sJh
+        3sZQX/MmExxxV5qFpQJBAJW54aVt5weRviljBfGYTO07OJZcajvUu3BZHig9iW9R
+        1pYN2217CXQBxBrA/L6OoodLiaojj7rmsF/25Ipzgmc=
+        -----END RSA PRIVATE KEY-----
+
+
+      roles: "as:event-reporter, um:reader"
+
+
+userManagement:
+  baseUrl: "http://localhost/um"
+
+documentManagement:
+  baseUrl: "http://localhost/dm"
+
+auditService:
+  baseUrl: "http://localhost/as"
+
+notificationService:
+  baseUrl: "http://localhost/ns"
+
+dashboard:
+  url: "http://localhost:4200/dashboard"
+invitation:
+  individual:
+    claim:
+      url: "http://localhost:4200/claim-invitation"
+  employer:
+    claim:
+      url: "http://localhost:4202/claim-invitation"
+
+events:
+  subscriber:
+    enabled: false
+  publisher:
+    topics:
+      - DOCUMENT_PROCESSING_INITIATION
+      - APPLICATION_ROLE_REPORTING
+      - AUDIT_EVENTS_RECORDING

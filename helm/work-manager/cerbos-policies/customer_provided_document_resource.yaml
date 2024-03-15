@@ -1,0 +1,9 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: customer_provided_document
+  rules:
+    - actions: ["update"]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW

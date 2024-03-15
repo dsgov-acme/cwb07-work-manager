@@ -1,0 +1,19 @@
+apiVersion: "api.cerbos.dev/v1"
+derived_roles:
+  name: transaction-roles
+  definitions:
+    - name: transaction-subject
+      parentRoles: ["transaction-submitter"]
+      condition:
+        match:
+          expr: request.principal.attr.accessProfiles.exists(x, x.type == request.resource.attr.subjectProfileType && x.id == request.resource.attr.subjectProfileId)
+    - name: transaction-related-party
+      parentRoles: ["transaction-submitter"]
+      condition:
+        match:
+          expr: request.principal.attr.accessProfiles.exists(x,request.resource.attr.additionalParties.exists(y, x.type == y.type && x.id == y.id))
+    - name: transaction-related-party-admin
+      parentRoles: [ "transaction-submitter" ]
+      condition:
+        match:
+          expr: request.principal.attr.accessProfiles.exists(x,request.resource.attr.additionalParties.exists(y, x.type == y.type && x.id == y.id) && x.level == "ADMIN")

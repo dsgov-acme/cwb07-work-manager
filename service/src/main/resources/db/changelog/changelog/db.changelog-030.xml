@@ -1,0 +1,95 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create_employer_table" author="jcsuarezm">
+        <createTable tableName="employer_profile">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="fein" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="legal_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="business_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="industry" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="summary_of_business" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="business_phone" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_timestamp" type="DATETIME"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_updated_by" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_updated_timestamp" type="DATETIME"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_address_table" author="jcsuarezm">
+        <createTable tableName="address">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="address1" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="address2" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="city" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="state" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="postal_code" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="country" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="county" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="employer_for_locations_id" type="uuid">
+                <constraints nullable="true" foreignKeyName="fk_address_locations_employer"
+                             references="employer_profile(id)"/>
+            </column>
+            <column name="employer_for_mailing_id" type="uuid">
+                <constraints nullable="true" foreignKeyName="fk_address_mailing_employer"
+                             references="employer_profile(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="create_other_names_table" author="jcsuarezm">
+        <createTable tableName="employer_profile_other_names">
+            <column name="employer_profile_id" type="uuid">
+                <constraints nullable="false" foreignKeyName="fk_employer_profile_other_names_employer"
+                             references="employer_profile(id)"/>
+            </column>
+            <column name="other_names" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

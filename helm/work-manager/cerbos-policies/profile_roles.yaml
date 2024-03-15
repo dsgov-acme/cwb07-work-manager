@@ -1,0 +1,19 @@
+apiVersion: 'api.cerbos.dev/v1'
+derived_roles:
+  name: profile-roles
+  definitions:
+    - name: profile-reader
+      parentRoles: ['public-profile-user']
+      condition:
+        match:
+          expr: request.principal.attr.accessProfiles.exists(x, x.id == request.resource.attr.id)
+    - name: profile-writer
+      parentRoles: ['public-profile-user']
+      condition:
+        match:
+          expr: request.principal.attr.accessProfiles.exists(x, x.id == request.resource.attr.id && x.level == "WRITER")
+    - name: profile-admin
+      parentRoles: ['public-profile-user']
+      condition:
+        match:
+          expr: request.principal.attr.accessProfiles.exists(x, x.id == request.resource.attr.id && x.level == "ADMIN")

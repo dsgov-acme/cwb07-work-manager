@@ -1,0 +1,118 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace | default "dsgov" }}
+  labels:
+    {{- include "work-manager.labels" . | nindent 4 }}
+spec:
+  {{- if or (not .Values.autoscaling.enabled) (.Values.postgres.enabled) }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "work-manager.selectorLabels" . | nindent 6 }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        roll: {{ randAlphaNum 5 | quote }}
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        {{- include "work-manager.selectorLabels" . | nindent 8 }}
+    spec:
+      # Set the serviceAccountName in non-local Postgres situations
+      {{- if (not .Values.postgres.enabled) }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      {{- end }}
+      containers:
+        {{- if not .Values.postgres.enabled }}
+        # Utilize Cloud SQL Proxy Sidecar
+        {{- include "work-manager.cloudsql.sidecar" . | nindent 8 }}
+        {{- end }}
+        - name: {{ .Values.environment }}-{{ .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: ENV
+              value: {{ default "dev" .Values.environment | quote }}
+            {{- include "env.tpl" .Values.env | indent 12 }}
+          ports:
+            - name: http
+              containerPort: {{ default "8080" .Values.net.applicationPort }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.net.contextPath }}{{ .Values.net.readinessProbe.path }}
+              port: {{ .Values.net.applicationPort }}
+              scheme: HTTP
+            periodSeconds: {{ .Values.net.readinessProbe.periodSeconds }}
+
+            {{- if not .Values.postgres.enabled }}
+            initialDelaySeconds: {{ .Values.net.readinessProbe.initialDelaySeconds }}
+            successThreshold: {{ .Values.net.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.net.readinessProbe.failureThreshold }}
+            timeoutSeconds: {{ .Values.net.readinessProbe.timeoutSeconds }}
+            {{- end }}
+          volumeMounts:
+            # Mount the shared volume containing the socket
+            - name: sock
+              mountPath: /sock
+          resources:
+            requests:
+              cpu: {{ .Values.resources.workManager.requests.cpu }}
+              memory: {{ .Values.resources.workManager.requests.memory }}
+            limits:
+              memory: {{ .Values.resources.workManager.limits.memory }}
+        - name: cerbos
+          image: "ghcr.io/cerbos/cerbos:0.24.0"
+          imagePullPolicy: IfNotPresent
+          args:
+            - "server"
+            - "--config=/config/config.yaml"
+            - "--log-level=INFO"
+          ports:
+            - containerPort: 3592
+              protocol: TCP
+          volumeMounts:
+            # Mount the shared volume containing the socket
+            - name: sock
+              mountPath: /sock
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: policies
+              mountPath: /policies
+          resources:
+            requests:
+              cpu: {{ .Values.resources.cerbos.requests.cpu }}
+              memory: {{ .Values.resources.cerbos.requests.memory }}
+            limits:
+              memory: {{ .Values.resources.cerbos.limits.memory }}
+      {{- if not .Values.postgres.enabled }}
+      # Initialize CloudSQL Proxy Sidecar with connection string
+      {{- include "work-manager.cloudsql.initContainer" . | nindent 6 }}
+      {{- end }}
+
+      {{- if not .Values.postgres.enabled }}
+      # required volume for persisting CloudSQL connection string
+      # from initContainer to sidecar
+      {{- include "work-manager.cloudsql.volume" . | nindent 6 }}
+      {{- end }}
+      {{- if .Values.postgres.enabled }}
+      volumes:
+        # Shared volume containing the socket.
+        - name: sock
+          emptyDir: { }
+        - name: config
+          configMap:
+            name: work-manager-cerbos-config
+        - name: policies
+          configMap:
+            name: work-manager-cerbos-policies
+      {{- end }}

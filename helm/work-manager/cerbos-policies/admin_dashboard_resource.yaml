@@ -1,0 +1,9 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: admin_dashboard
+  rules:
+    - actions: ["view"]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW

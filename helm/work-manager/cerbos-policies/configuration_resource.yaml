@@ -1,0 +1,9 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: configuration
+  rules:
+    - actions: ["import", "export"]
+      roles:
+        - transaction-config-admin
+      effect: EFFECT_ALLOW

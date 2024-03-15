@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Values.namespace | default "dsgov" }}
+  # We only want this annotation in GKE; not in Minikube
+  {{- if (not .Values.postgres.enabled) }}
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}' # Creates a NEG after an Ingress is created
+  {{- end }}
+spec:
+  selector:
+    {{- include "work-manager.selectorLabels" . | nindent 4}}
+  ports:
+    - protocol: TCP
+      port: {{ default "80" .Values.net.servicePort }}
+      targetPort: {{ default "8080" .Values.net.applicationPort }}
+  sessionAffinity: None
+  type: NodePort

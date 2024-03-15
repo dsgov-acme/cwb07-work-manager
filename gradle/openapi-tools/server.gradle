@@ -1,0 +1,19 @@
+apply from: "$rootDir/gradle/openapi-tools/base.gradle"
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'jakarta.validation:jakarta.validation-api'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+    implementation 'org.openjdk.nashorn:nashorn-core:15.4'
+}
+
+openApiGenerate {
+    generatorName = 'spring'
+    configOptions = [
+            openApiNullable: "false",
+            delegatePattern: "true",
+            documentationProvider: 'springdoc',
+            configPackage: "${group}.${name}.generated.config",
+            useSpringBoot3: "true"
+    ]
+}

@@ -1,0 +1,20 @@
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="drop_legacy_secure_messaging_tables" author="jcsuarezm">
+        <dropTable tableName="message_reader" cascadeConstraints="true"/>
+        <dropTable tableName="employer_message_participant" cascadeConstraints="true"/>
+        <dropTable tableName="individual_message_participant" cascadeConstraints="true"/>
+        <dropTable tableName="agency_message_participant" cascadeConstraints="true"/>
+        <dropTable tableName="conversation_participant" cascadeConstraints="true"/>
+    </changeSet>
+    <changeSet id="add_transaction_completed_on" author="jgiraldo">
+        <addColumn tableName="transaction">
+            <column name="completed_on" type="DATETIME">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,22 @@
+apply from: "$rootDir/gradle/openapi-tools/base.gradle"
+
+ext {
+    swagger_annotations_version = "2.2.15"
+    jackson_version = "2.15.2"
+    jakarta_annotation_version = "2.1.1"
+}
+
+dependencies {
+    api "io.swagger.core.v3:swagger-annotations:$swagger_annotations_version"
+    api "com.google.code.findbugs:jsr305:3.0.2"
+    api "com.fasterxml.jackson.core:jackson-core:$jackson_version"
+    api "com.fasterxml.jackson.core:jackson-annotations:$jackson_version"
+    api "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    api "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
+    api "jakarta.annotation:jakarta.annotation-api:$jakarta_annotation_version"
+}
+
+openApiGenerate {
+    generatorName = 'java'
+    configOptions = [library: 'native', java8: 'true', dateLibrary: 'java8', openApiNullable: 'false', useJakartaEe: 'true']
+}

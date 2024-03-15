@@ -1,0 +1,12 @@
+{
+  "key": "GrandChild",
+  "name": "GrandChild",
+  "attributes": [
+    {
+      "name": "name",
+      "type": "String",
+      "attributeConfigurations": []
+    }
+  ],
+  "computedAttributes": []
+}
