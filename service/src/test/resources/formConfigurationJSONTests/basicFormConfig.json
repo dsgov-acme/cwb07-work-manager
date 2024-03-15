@@ -1,0 +1,155 @@
+{
+  "components": [
+    {
+      "key": "firstName",
+      "input": true,
+      "props": {
+        "required": true
+      }
+    },
+    {
+      "key": "lastName",
+      "input": true,
+      "props": {
+        "required": true
+      }
+    },
+    {
+      "key": "email",
+      "input": true,
+      "props": {
+        "required": true
+      },
+      "validators": {
+        "validation": [
+          "email"
+        ]
+      }
+    },
+    {
+      "key": "countryCode",
+      "input": true,
+      "props": {
+        "required": false,
+        "selectOptions": [
+          {
+            "key": "USA",
+            "displayTextValue": "United States"
+          },
+          {
+            "key": "CAN",
+            "displayTextValue": "Canada"
+          },
+          {
+            "key": "MEX",
+            "displayTextValue": "Mexico"
+          }
+        ]
+      }
+    },
+    {
+      "key": "address",
+      "input": true,
+      "props": {
+        "required": true
+      },
+      "expressions": {
+        "hide": "!model.isMailingAddressNeeded"
+      }
+    },
+    {
+      "key": "employmentStatus",
+      "input": true,
+      "props": {
+        "required": true
+      }
+    },
+    {
+      "key": "company",
+      "input": true,
+      "props": {
+        "required": true,
+        "maxLength": 10,
+        "minLength": 2,
+        "pattern": "^(Nuvalence|anyCompany|myCompany)$"
+      },
+      "expressions": {
+        "hide": "model.employmentStatus == 'employed'"
+      }
+    },
+    {
+      "key": "isMailingAddressNeeded",
+      "input": true,
+      "props": {
+        "required": true
+      }
+    },
+    {
+      "key": "age",
+      "input": true,
+      "props": {
+        "required": true,
+        "max": 60,
+        "min": 18
+      }
+    },
+    {
+      "key": "formSectionHeader",
+      "input": false
+    },
+    {
+      "key": "someDate",
+      "input": true,
+      "props": {
+        "maxDate": "2023-11-17",
+        "minDate": "2023-11-13"
+      }
+    },
+    {
+      "key": "strings",
+      "type": "nuverialFormList",
+      "input": true,
+      "keyContextProvider": true,
+      "props": {
+        "label": "strings",
+        "includeIndex": true,
+        "includeLabel": true
+      },
+      "components": [
+        {
+          "key": "text",
+          "input": true,
+          "props": {
+            "required": true
+          }
+        }
+      ]
+    },
+    {
+      "key": "officeInfoList",
+      "type": "nuverialFormList",
+      "input": true,
+      "keyContextProvider": true,
+      "props": {
+        "includeIndex": true,
+        "includeLabel": true
+      },
+      "components": [
+        {
+          "key": "city",
+          "input": true,
+          "props": {
+            "required": true
+          }
+        },
+        {
+          "key": "address",
+          "input": true,
+          "props": {
+            "required": true
+          }
+        }
+      ]
+    }
+  ]
+}

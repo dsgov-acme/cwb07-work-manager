@@ -1,0 +1,149 @@
+/**
+ * REQUIRES PLUGINS: checkstyle, spotless, jacoco, spotbugs, pmd
+ */
+
+/**
+ * code style
+ */
+
+checkstyle {
+    toolVersion '10.12.4'
+}
+
+checkstyleMain {
+    source = 'src'
+    configFile = file("${rootProject.projectDir}/config/checkstyle/checkstyle.xml")
+}
+
+spotless {
+
+    format 'misc', {
+        target '*.gradle', '*.md', '.gitignore'
+        trimTrailingWhitespace()
+        indentWithTabs()
+        endWithNewline()
+    }
+    java {
+        target '**/src/**/java/**/*.java'
+        targetExclude('**/generate-resources/**')
+        googleJavaFormat('1.15.0').aosp().reflowLongStrings()
+        toggleOffOn('/**', '*/') // don't reformat javadocs
+        importOrder('', 'java', 'jakarta')
+        formatAnnotations()
+        removeUnusedImports()
+    }
+}
+
+/**
+ * code coverage
+ */
+jacoco {
+    toolVersion = "0.8.10"
+}
+test.finalizedBy jacocoTestReport
+jacocoTestReport.dependsOn test
+
+test {
+    jacoco {
+        excludes += '**/generated/**'
+        excludes += '**/RFC3339DateFormat*'
+        excludes += '**/OpenAPI2SpringBoot*'
+        excludes += '**/mapper/*Impl*'
+        excludes += '**/models/*Filters*'
+    }
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+
+	reports {
+        xml.required = true
+        html.required = true
+	}
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: test.jacoco.excludes)
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: test.jacoco.excludes)
+        }))
+    }
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.90
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+
+/**
+ *  static code analysis
+ */
+
+spotbugs {
+    ignoreFailures = false
+    showStackTraces = true
+    showProgress = true
+    effort = 'max'
+    reportLevel = 'high'
+    reportsDir = file("$buildDir/spotbugs") as Directory
+    excludeFilter = file("$rootDir/config/spotbugs/excludes.xml")
+    //baselineFile = file("${rootDir}/config/spotbugs/baseline.xml") as RegularFile
+    maxHeapSize = '1g'
+}
+spotbugsMain {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+}
+spotbugsTest {
+    reports {
+        html {
+            required = true
+            outputLocation = file("$buildDir/reports/spotbugs/test/spotbugs.html")
+            stylesheet = 'fancy-hist.xsl'
+        }
+    }
+}
+
+pluginManager.withPlugin('com.github.spotbugs:spotbugs') {
+    dependencies {
+        spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+    }
+}
+
+pmd {
+    ruleSets = ["${rootDir}/config/pmd/ruleset.xml"]
+    ignoreFailures = false
+    pmdMain {
+        source = fileTree('src/main')
+    }
+    pmdTest {
+        source = fileTree('src/test')
+    }
+}
+
+/**
+ * security
+ */
+
+apply plugin: 'org.owasp.dependencycheck'
+
+dependencyCheck {
+    failBuildOnCVSS = 7
+    skipConfigurations = ['checkstyle', 'testImplementation', 'functionalTestImplementation']
+    suppressionFile = "${rootDir}/config/owasp/suppressions.xml"
+}

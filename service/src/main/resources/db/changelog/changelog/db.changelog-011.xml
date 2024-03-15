@@ -1,0 +1,44 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="create-soft-delete-fields-transaction-note" author="jcsuarezm">
+        <addColumn tableName="note">
+            <column name="deleted" type="boolean" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="deleted_on" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet author="jgiraldo" id="rename-priority-column">
+        <renameColumn tableName="transaction" oldColumnName="priority" newColumnName="priority2" />
+    </changeSet>
+    <changeSet author="jgiraldo" id="modify-table-priority">
+        <addColumn tableName="transaction">
+            <column name="priority" type="NUMBER(1)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="jgiraldo" id="populate-priority">
+        <sql>
+            UPDATE transaction
+            SET priority =
+                    CASE priority2
+                        WHEN 'low' THEN 1
+                        WHEN 'medium' THEN 2
+                        WHEN 'high' THEN 3
+                        WHEN 'urgent' THEN 4
+                        END;
+        </sql>
+    </changeSet>
+
+    <changeSet author="jgiraldo" id="remove-column-priority2">
+        <dropColumn tableName="transaction" columnName="priority2"/>
+    </changeSet>
+
+</databaseChangeLog>

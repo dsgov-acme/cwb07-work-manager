@@ -1,0 +1,21 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: employer_user_link
+  rules:
+    - actions: ["view"]
+      roles:
+        - agency-profile-admin
+        - employer-admin
+        - employer-user
+      effect: EFFECT_ALLOW
+    - actions: [ "update" ]
+      roles:
+        - agency-profile-admin
+        - employer-admin
+      effect: EFFECT_ALLOW
+    - actions: ["delete"]
+      roles:
+        - agency-profile-admin
+        - employer-admin
+      effect: EFFECT_ALLOW

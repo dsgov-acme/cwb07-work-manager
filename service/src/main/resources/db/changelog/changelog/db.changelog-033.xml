@@ -1,0 +1,48 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create_individual_table" author="acalderon">
+        <createTable tableName="individual_profile">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="owner_user_id" type="varchar(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ssn" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_timestamp" type="DATETIME"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_updated_by" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_updated_timestamp" type="DATETIME"
+                    defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="create-individual-columns-in-address" author="acalderon">
+        <addColumn tableName="address">
+            <column name="individual_for_primary_address_id" type="uuid">
+                <constraints nullable="true" foreignKeyName="fk_primary_address_individual"
+                             references="individual_profile(id)"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="address">
+            <column name="individual_for_mailing_id" type="uuid">
+                <constraints nullable="true" foreignKeyName="fk_address_mailing_individual"
+                             references="individual_profile(id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>

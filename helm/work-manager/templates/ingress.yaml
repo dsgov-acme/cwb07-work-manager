@@ -1,0 +1,20 @@
+# Conditionally create the Ingress for local; unneeded in GKE.
+{{- if .Values.createIngress }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: work-manager-ingress
+  namespace: {{ .Values.namespace | default "dsgov" }}
+spec:
+  rules:
+    - host: {{ .Values.net.host }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: {{ .Values.net.contextPath }}
+            backend:
+              service:
+                name: work-manager
+                port:
+                  number: {{ .Values.net.servicePort }}
+{{- end }}

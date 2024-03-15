@@ -1,0 +1,61 @@
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create_transaction_record_link_table" author="dortega">
+
+        <createTable tableName="transaction_record_link">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+
+            <column name="record_id" type="uuid">
+                <constraints nullable="false" />
+            </column>
+            <column name="transaction_id" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="record_link_type" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="transaction_record_link_constraints" author="dortega">
+        <addForeignKeyConstraint
+            constraintName="fk_transaction_record_link_transaction_id"
+            baseTableName="transaction_record_link"
+            baseColumnNames="transaction_id"
+            referencedTableName="transaction"
+            referencedColumnNames="id"
+            onDelete="CASCADE" />
+
+        <addForeignKeyConstraint
+            constraintName="fk_transaction_record_link_record_id"
+            baseTableName="transaction_record_link"
+            baseColumnNames="record_id"
+            referencedTableName="record"
+            referencedColumnNames="id" />
+
+    </changeSet>
+
+    <changeSet id="remove_duplicated_link_rows" author="jgiraldo">
+        <sql>
+            WITH ranked_records AS (
+                SELECT id, ROW_NUMBER() OVER (
+                PARTITION BY profile_id, user_id
+                ORDER BY created_timestamp DESC
+            ) AS rn
+                FROM public.individual_user_link
+            )
+            DELETE FROM public.individual_user_link
+            WHERE id IN (
+                SELECT id FROM ranked_records WHERE rn > 1
+            );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

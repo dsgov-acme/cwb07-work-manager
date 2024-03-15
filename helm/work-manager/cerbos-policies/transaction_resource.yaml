@@ -1,0 +1,42 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  importDerivedRoles:
+    - transaction-roles
+  resource: transaction
+  rules:
+    - actions: ["create"]
+      roles:
+        - transaction-submitter
+        - transaction-admin
+      effect: EFFECT_ALLOW
+
+    - actions: [ "update" ]
+      roles:
+        - transaction-admin
+      derivedRoles:
+        - transaction-subject
+        - transaction-related-party-admin
+      effect: EFFECT_ALLOW
+
+    - actions: [ "view" ]
+      roles:
+        - transaction-admin
+      derivedRoles:
+        - transaction-subject
+        - transaction-related-party-admin
+        - transaction-related-party
+      effect: EFFECT_ALLOW
+
+    - actions: ["process-attachments"]
+      roles:
+        - transaction-admin
+      derivedRoles:
+        - transaction-subject
+        - transaction-related-party-admin
+      effect: EFFECT_ALLOW
+
+    - actions: ["update-admin-data"]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW

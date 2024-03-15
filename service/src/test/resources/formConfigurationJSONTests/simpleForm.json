@@ -1,0 +1,16 @@
+{
+  "components": [
+    {
+      "key": "foo",
+      "input": true,
+      "props": {
+        "required": true
+      },
+      "validators": {
+        "validation": [
+          "email"
+        ]
+      }
+    }
+  ]
+}

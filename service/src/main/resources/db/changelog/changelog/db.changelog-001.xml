@@ -1,0 +1,20 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="add_document_id_to_customer_provided_document" author="deibys.quintero">
+        <addColumn tableName="customer_provided_document">
+            <column name="document_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="delete_document_id_provided_document" author="jcsuarezm">
+        <dropColumn columnName="document_id" tableName="customer_provided_document"/>
+    </changeSet>
+    <changeSet id="rename_schema_key_to_data_path" author="jcsuarezm">
+        <renameColumn tableName="customer_provided_document" oldColumnName="schema_key" newColumnName="data_path"/>
+    </changeSet>
+</databaseChangeLog>

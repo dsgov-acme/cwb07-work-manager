@@ -1,0 +1,10 @@
+{
+  "key": "TestSchema",
+  "name": "TestSchema",
+  "attributes": [
+    {
+      "name": "property",
+      "type": "String"
+    }
+  ]
+}

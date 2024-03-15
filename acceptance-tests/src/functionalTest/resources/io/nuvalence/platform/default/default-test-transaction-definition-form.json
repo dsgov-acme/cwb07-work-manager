@@ -1,0 +1,7 @@
+{
+  "name": "Test Transaction Definition Form",
+  "schemaKey": "TestSchema",
+  "description": "Test Transaction Definition Form",
+  "configurationSchema": "formio",
+  "configuration": {}
+}

@@ -1,0 +1,25 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: employer_profile_invitation
+  rules:
+    - actions: ["read"]
+      roles:
+        - agency-profile-admin
+        - employer-admin
+        - employer-user
+      effect: EFFECT_ALLOW
+    - actions: [ "claim" ]
+      roles:
+        - public-profile-user
+      effect: EFFECT_ALLOW
+    - actions: ["invite"]
+      roles:
+        - agency-profile-admin
+        - employer-admin
+      effect: EFFECT_ALLOW
+    - actions: [ "delete" ]
+      roles:
+        - agency-profile-admin
+        - employer-admin
+      effect: EFFECT_ALLOW

@@ -1,0 +1,37 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="link-schema-with-transactions" author="acalderon">
+        <addUniqueConstraint tableName="dynamic_schema" columnNames="key"/>
+        <addForeignKeyConstraint baseTableName="transaction"
+                                 baseColumnNames="dynamic_schema_id"
+                                 constraintName="fk_transaction_schema_id"
+                                 referencedTableName="dynamic_schema"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="transaction_definition"
+                                 baseColumnNames="schema_key"
+                                 constraintName="fk_transaction_definition_schema_key"
+                                 referencedTableName="dynamic_schema"
+                                 referencedColumnNames="key"/>
+    </changeSet>
+    <changeSet id="add_table_parent_child_schemas" author="acalderon">
+        <createTable tableName="parent_child_schema">
+            <column name="parent_id" type="VARCHAR(255)">
+            </column>
+            <column name="child_id" type="VARCHAR(255)">
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="parent_child_schema"
+                                 baseColumnNames="parent_id"
+                                 constraintName="fk_parent_child_schema_parent_id"
+                                 referencedTableName="dynamic_schema"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="parent_child_schema"
+                                 baseColumnNames="child_id"
+                                 constraintName="fk_parent_child_schema_child_id"
+                                 referencedTableName="dynamic_schema"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

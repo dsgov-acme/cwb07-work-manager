@@ -1,0 +1,56 @@
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create-message-sender-table" author="jcsuarezm">
+        <createTable tableName="message_sender">
+            <column name="id" type="uuid" remarks="Primary key">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="user_id" type="uuid" remarks="User ID">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_display_name" type="varchar(255)" remarks="User Display Name" />
+            <column name="user_type" type="varchar(255)" remarks="User Type">
+                <constraints nullable="false" />
+            </column>
+            <column name="profile_id" type="uuid" remarks="Profile ID">
+                <constraints nullable="false" />
+            </column>
+            <column name="profile_type" type="varchar(255)" remarks="Profile Type">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="modify-message-table" author="jcsuarezm">
+        <dropColumn tableName="message" columnName="sender_id" />
+
+        <addColumn tableName="message">
+            <column name="message_sender_id" type="uuid">
+                <constraints nullable="true" />
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_message_message_sender"
+            baseTableName="message"
+            baseColumnNames="message_sender_id"
+            referencedTableName="message_sender"
+            referencedColumnNames="id" />
+    </changeSet>
+
+    <changeSet id="message-sender-allow-null-profile-for-agency" author="dortega">
+        <dropNotNullConstraint tableName="message_sender" columnName="profile_id" />
+        <dropNotNullConstraint tableName="message_sender" columnName="profile_type" />
+    </changeSet>
+
+    <changeSet id="add_is_public_visible_column" author="jgiraldo">
+        <addColumn tableName="transaction_definition">
+            <column name="is_public_visible" type="boolean" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

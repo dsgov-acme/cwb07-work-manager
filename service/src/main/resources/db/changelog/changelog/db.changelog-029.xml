@@ -1,0 +1,62 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="add-record-form-configuration-selection-rule-table" author="jcsuarezm">
+        <createTable tableName="record_form_configuration_selection_rule">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="viewer" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="context" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="form_configuration_key" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="record_definition_id" type="uuid">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add-fk-with-cascade-to-form-configuration" author="jcsuarezm">
+        <addForeignKeyConstraint constraintName="fk_record_definition"
+                                 baseTableName="record_form_configuration_selection_rule"
+                                 baseColumnNames="record_definition_id"
+                                 referencedTableName="record_definition"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="add-record-definition-id-column-to-form-configuration" author="jcsuarezm">
+        <addColumn tableName="form_configuration">
+            <column name="record_definition_id" type="uuid">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add-fk-record-definition-to-form-configuration" author="jcsuarezm">
+        <addForeignKeyConstraint constraintName="fk_record_definition_form_configuration"
+                                 baseTableName="form_configuration"
+                                 baseColumnNames="record_definition_id"
+                                 referencedTableName="record_definition"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="add_nullable_unique_record_definition" author="jcsuarezm">
+        <addColumn tableName="form_configuration">
+            <column name="record_definition_key" type="varchar(1024)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="drop_key_not_nullable_constraints" author="jcsuarezm">
+        <dropNotNullConstraint tableName="form_configuration" columnName="transaction_definition_key" columnDataType="varchar(1024)"/>
+    </changeSet>
+</databaseChangeLog>

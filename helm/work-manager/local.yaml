@@ -1,0 +1,38 @@
+environment: "local"
+
+postgres:
+  enabled: false
+  persistence:
+    size: 1Gi
+  env:
+    POSTGRES_DB: "local-work-manager-db"
+    POSTGRES_HOST: 'postgres-14-alpine'
+    POSTGRES_PASSWORD: "root"
+    POSTGRES_PORT: 5432
+    POSTGRES_USER: "root"
+
+net:
+  host: "api.cwb07.test"
+
+env:
+  ALLOWED_ORIGINS: "http://localhost:4200, http://localhost:4201, http://agency.cwb07.test, http://public.cwb07.test, http://employer.cwb07.test"
+  DB_CONNECTION_URL: "jdbc:postgresql://work-manager-postgres:5432/local-work-manager-db"
+  DB_USERNAME: "root"
+  DB_PASSWORD: "root"
+  GCP_PROJECT_ID: "cwb07-dev"
+  VERTEX_AI_LOCATION: "us-west1"
+  CERBOS_URI: "127.0.0.1:3592" #"unix:/sock/cerbos.sock"
+  SELF_SIGN_PUBLIC_KEY: "${sm://projects/cwb07-dev/secrets/cwb07-self-signed-token-public-key/versions/latest}"
+  SELF_SIGN_PRIVATE_KEY: "${sm://projects/cwb07-dev/secrets/cwb07-self-signed-token-private-key/versions/latest}"
+  USER_MANAGEMENT_BASE_URL: "http://user-management/um"
+  TOKEN_PRIVATE_KEY_SECRET: "cwb07-self-signed-token-private-key"
+  TOKEN_ISSUER: "cwb07"
+  TOKEN_PRIVATE_KEY_VERSION: "latest"
+  OTEL_SAMPLER_PROBABILITY: 1.0 # valid values: [0.0 - 1.0]
+  DASHBOARD_URL: "http://public.cwb07.test/dashboard"
+  INDIVIDUAL_PROFILE_CLAIM_URL: "https://public-dev.cwb07.dsgov.demo.nuvalence.io/claim-invitation"
+  EMPLOYER_PROFILE_CLAIM_URL: "https://employer-dev.cwb07.dsgov.demo.nuvalence.io/claim-invitation"
+  PUBSUB_EMULATOR_HOST: "pubsub-emulator-service:8085" # set actual "host:port" to enable or false to disable
+  PUBSUB_EMULATOR_ENABLED: true # set to true to enable emulator
+  # cwb07-events publisher topics separated by comma
+  PUBLISHER_TOPICS: projects/cwb07-dev/topics/DOCUMENT_PROCESSING_INITIATION,projects/cwb07-dev/topics/APPLICATION_ROLE_REPORTING,projects/cwb07-dev/topics/NOTIFICATION_REQUESTS,projects/cwb07-dev/topics/AUDIT_EVENTS_RECORDING

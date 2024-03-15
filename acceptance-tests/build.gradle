@@ -1,0 +1,104 @@
+import java.text.SimpleDateFormat
+
+plugins {
+	id 'java'
+	id 'checkstyle'
+	id 'jacoco'
+	id 'com.github.spacialcircumstances.gradle-cucumber-reporting' version '0.1.25'
+	id 'com.diffplug.spotless'
+	id 'com.github.spotbugs'
+	id 'pmd'
+}
+
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+
+apply from: "${rootDir}/gradle/code-quality.gradle"
+
+def cucumberVersion = '7.11.2'
+def junitVersion = '5.7.2'
+
+
+configurations {
+	functionalTestImplementation
+	functionalTestCompileOnly.extendsFrom functionalTestAnnotationProcessor
+}
+
+dependencies {
+	functionalTestAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+	functionalTestCompileOnly 'com.google.code.findbugs:annotations:3.0.1'
+
+	functionalTestImplementation project(":client")
+
+	functionalTestImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+	functionalTestImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
+	functionalTestImplementation "io.cucumber:cucumber-picocontainer:${cucumberVersion}"
+
+	functionalTestImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+	functionalTestImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+
+	functionalTestImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
+
+	functionalTestImplementation platform('org.springframework.boot:spring-boot-dependencies:2.7.8')
+	functionalTestImplementation 'org.awaitility:awaitility:3.0.0'
+	functionalTestImplementation 'com.google.cloud:google-cloud-secretmanager:2.5.0'
+	functionalTestImplementation 'io.nuvalence.dsgov:dsgov-auth:1.1.13'
+
+	functionalTestImplementation 'org.slf4j:slf4j-api:1.7.32'
+	functionalTestImplementation 'org.slf4j:slf4j-log4j12:1.7.36'
+
+	functionalTestImplementation "org.apache.httpcomponents:httpclient:4.5.13"
+	functionalTestImplementation "org.apache.httpcomponents:httpmime:4.5.13"
+	functionalTestImplementation 'commons-io:commons-io:2.11.0'
+
+}
+
+test {
+	useJUnitPlatform()
+}
+
+sourceSets {
+	functionalTest {
+		java {}
+	}
+}
+
+SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+
+task runTestConfiguration(type: JavaExec) {
+	mainClass.set('io.nuvalence.platform.Main')
+	classpath = sourceSets.functionalTest.runtimeClasspath
+	args = []
+	doFirst {
+		println "Deploying test configuration."
+	}
+}
+
+task functionalTest(type: Test) {
+	dependsOn runTestConfiguration
+	doFirst {
+		println "starting functional tests at: " + sdf.format(new Date())
+	}
+	description = 'Runs the functional tests.'
+	group = 'verification'
+	testClassesDirs = sourceSets.functionalTest.output.classesDirs
+	classpath = sourceSets.functionalTest.runtimeClasspath
+	outputs.upToDateWhen { false }
+	useJUnitPlatform()
+	systemProperty("cucumber.junit-platform.naming-strategy", "long")
+	systemProperty("cucumber.plugin", "pretty, json:build/test-results/functionalTest/cucumber.json")
+	finalizedBy generateCucumberReports
+	if (project.hasProperty("baseUri")) {
+		environment 'SERVICE_URI', "${baseUri}"
+	}
+	doLast {
+		println "completing functional tests at: " + sdf.format(new Date())
+	}
+}
+
+cucumberReports {
+	outputDir = file('build/reports/cucumber')
+	reports = files('build/test-results/functionalTest/cucumber.json')
+	testTasksFinalizedByReport = false
+}

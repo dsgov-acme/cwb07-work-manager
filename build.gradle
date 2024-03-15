@@ -1,0 +1,59 @@
+import com.github.jk1.license.filter.*
+
+plugins {
+    id 'org.openapi.generator' version '7.0.0' apply false
+    id 'com.google.cloud.tools.jib' version '3.3.1' apply false
+    id 'org.sonarqube' version '4.3.1.3277' apply false
+    id 'org.owasp.dependencycheck' version '8.2.1' apply false
+    id 'com.diffplug.spotless' version '6.22.0' apply false
+    id 'com.github.spotbugs' version '5.0.13' apply false
+    id 'com.github.jk1.dependency-license-report' version '2.5'
+}
+
+licenseReport {
+    allowedLicensesFile = new File("$projectDir/config/allowed-licenses.json")
+    filters = [new LicenseBundleNormalizer(bundlePath: "$projectDir/config/license-normalizer-bundle.json")]
+    excludeBoms = true
+    excludes = [
+            // Package only brings in additional dependencies that are evaluated individually
+            'org.springframework.boot:spring-boot-dependencies'
+    ]
+}
+
+project.tasks.named("checkLicense") {
+    inputs.file(licenseReport.allowedLicensesFile)
+            .withPropertyName("allowedLicensesConfiguration")
+}
+
+task("check") {
+    dependsOn("checkLicense")
+}
+
+allprojects {
+    group = 'io.nuvalence.workmanager'
+    version = '0.0.1-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+    }
+
+    dependencies {
+        configurations.configureEach {
+            resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+                if (details.requested.group == 'org.apache.bcel' && details.requested.name == 'bcel' && details.requested.version == '6.5.0') {
+                    details.useVersion '6.6.0'
+                    details.because 'fixes critical bug in 6.5.0'
+                }
+
+                if (details.requested.group == 'junit' && details.requested.name == 'junit' && details.requested.version == '4.12') {
+                    details.useVersion '4.13.2'
+                    details.because 'fixes high severtity bug in 4.12'
+                }
+            }
+        }
+    }
+}
+

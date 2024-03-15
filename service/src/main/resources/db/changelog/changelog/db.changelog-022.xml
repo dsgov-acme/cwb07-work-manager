@@ -1,0 +1,97 @@
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <!-- the following changesets were originally implemented in a modularized way using liquibase properties to pass variables to a unique sql script, but unfortunately didn't work in any way -->
+
+    <!-- form -->  
+    <changeSet id="unique-index-form_configuration-form_configuration_key" dbms="postgresql" author="dortega">
+        <sql>
+            delete from form_configuration where id not in (
+                SELECT deduplication.id_to_preserve FROM (
+                    -- deduplicating
+                        SELECT 
+                          id as id_to_preserve, 
+                          form_configuration_key as key,
+                          LOWER(form_configuration_key) as lowercase_key,    
+                          COUNT(*) OVER (PARTITION BY LOWER(form_configuration_key)) as repetitions,
+                          created_timestamp,
+                          ROW_NUMBER() OVER (PARTITION BY LOWER(form_configuration_key) ORDER BY created_timestamp ASC) as insertion_order
+                        FROM form_configuration
+                    -- end of deduplicating
+                ) as deduplication WHERE insertion_order = 1
+            );
+
+            create unique index form_configuration_form_configuration_key_uniqueness on form_configuration (lower(form_configuration_key));
+        </sql>
+    </changeSet>
+    
+    <!-- transactionDef -->
+    <changeSet id="unique-index-creation-transaction_definition-transaction_definition_key" dbms="postgresql" author="dortega">
+        <sql>
+            delete from transaction_definition where id not in (
+                SELECT deduplication.id_to_preserve FROM (
+                    -- deduplicating
+                        SELECT 
+                          id as id_to_preserve, 
+                          transaction_definition_key as key,
+                          LOWER(transaction_definition_key) as lowercase_key,    
+                          COUNT(*) OVER (PARTITION BY LOWER(transaction_definition_key)) as repetitions,
+                          created_timestamp,
+                          ROW_NUMBER() OVER (PARTITION BY LOWER(transaction_definition_key) ORDER BY created_timestamp ASC) as insertion_order
+                        FROM transaction_definition
+                    -- end of deduplicating
+                ) as deduplication WHERE insertion_order = 1
+            );
+
+            create unique index transaction_definition_transaction_definition_key_uniqueness on transaction_definition (lower(transaction_definition_key));
+        </sql>
+    </changeSet>
+
+    <!-- transactionDefSet -->
+    <changeSet id="unique-index-creation-transaction_definition_set-transaction_definition_set_key" dbms="postgresql" author="dortega">
+        <sql>
+            delete from transaction_definition_set where id not in (
+                SELECT deduplication.id_to_preserve FROM (
+                    -- deduplicating
+                        SELECT 
+                          id as id_to_preserve, 
+                          transaction_definition_set_key as key,
+                          LOWER(transaction_definition_set_key) as lowercase_key,    
+                          COUNT(*) OVER (PARTITION BY LOWER(transaction_definition_set_key)) as repetitions,
+                          created_timestamp,
+                          ROW_NUMBER() OVER (PARTITION BY LOWER(transaction_definition_set_key) ORDER BY created_timestamp ASC) as insertion_order
+                        FROM transaction_definition_set
+                    -- end of deduplicating
+                ) as deduplication WHERE insertion_order = 1
+            );
+
+            create unique index transaction_definition_set_transaction_definition_set_key_uniqueness on transaction_definition_set (lower(transaction_definition_set_key));
+        </sql>
+    </changeSet>
+
+    <!-- schema -->
+    <changeSet id="unique-index-creation-dynamic_schema-key" dbms="postgresql" author="dortega">
+        <sql>
+            delete from dynamic_schema where id not in (
+                SELECT deduplication.id_to_preserve FROM (
+                    -- deduplicating
+                        SELECT 
+                          id as id_to_preserve, 
+                          key as key,
+                          LOWER(key) as lowercase_key,    
+                          COUNT(*) OVER (PARTITION BY LOWER(key)) as repetitions,
+                          created_timestamp,
+                          ROW_NUMBER() OVER (PARTITION BY LOWER(key) ORDER BY created_timestamp ASC) as insertion_order
+                        FROM dynamic_schema
+                    -- end of deduplicating
+                ) as deduplication WHERE insertion_order = 1
+            );
+
+            create unique index dynamic_schema_key_uniqueness on dynamic_schema (lower(key));
+        </sql>
+    </changeSet>
+    
+</databaseChangeLog>

@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1dl5ey4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.13.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.20.0">
+  <bpmn:collaboration id="Collaboration_1nu4i0h">
+    <bpmn:participant id="Participant_1frsb2s" name="Application" processRef="FinancialBenefitApplication" />
+  </bpmn:collaboration>
+  <bpmn:process id="FinancialBenefitApplication" name="Financial Benefit" isExecutable="true" camunda:historyTimeToLive="18250">
+    <bpmn:documentation>For the "Public" participant, the process begins at the start event and proceeds to the "Digital Intake" user task. Once this task is finished, the application is submitted and represented by the sequence flow labeled "Submit". This sequence flow ends at the "Review" user task, a task performed by the "Agency" participant.
+
+Upon reviewing the application, the agency has three options: "Approve", "Deny" or "Request Changes". This decision making is incorporated within the BPMN Exclusive Gateway after the "Review" task. If changes are requested, it goes back to the "Public" user and asks them to "Correct Information". The sequence flow labeled "Submit Corrections" then allows the corrected application to be resubmitted to the "Review" task.
+
+If the decision is to "Deny", the process moves to the "Pending Permanent Denial" task and waits for 30 days. If no action is taken during this time, the process ends at the "Denied" end event. However, the denial can be undone, after which the application again goes for the "Review".
+
+For the "Approve" case, the application is considered "Approved" and the process reaches its approved end event.
+
+Note that each participant has constraints specified by properties such as roles, action labels, and statuses. Also, some of these tasks and sequence flows include event listeners which have been encoded to specific classes and execute on certain events.</bpmn:documentation>
+    <bpmn:laneSet id="LaneSet_19pcg6a">
+      <bpmn:lane id="Lane_0g1pmd1" name="Public">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="workflow.allowed.userTypes" value="agency,public" />
+          </camunda:properties>
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>Event_0k1lavn</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>digitalIntake</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>correctInformation</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_12624zp</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>farUserTask</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_00to3gt</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_0lyncp3" name="Agency">
+        <bpmn:extensionElements>
+          <camunda:properties>
+            <camunda:property name="workflow.allowed.userTypes" value="agency" />
+          </camunda:properties>
+        </bpmn:extensionElements>
+        <bpmn:flowNodeRef>review</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1dlzc3o</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0mtymk1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>DenialPending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>approved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ApprovalPending</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Gateway_1p8ls1v</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>activityAgency1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>activityAgency2</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_02gp8ep</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>unreachableUserTask</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0ba17sq</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1xaeovz</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Event_0k1lavn">
+      <bpmn:outgoing>Flow_1ufmd9t</bpmn:outgoing>
+      <bpmn:outgoing>Flow_10r0q8g</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0bb5vkd</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1ufmd9t" sourceRef="Event_0k1lavn" targetRef="digitalIntake" />
+    <bpmn:sequenceFlow id="Flow_10r0q8g" sourceRef="Event_0k1lavn" targetRef="Activity_02gp8ep" />
+    <bpmn:sequenceFlow id="Flow_0bb5vkd" sourceRef="Event_0k1lavn" targetRef="Activity_12624zp" />
+    <bpmn:userTask id="review" name="Review">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionStatusUpdateDelegate" event="start" />
+        <camunda:properties>
+          <camunda:property name="status" value="Review" />
+          <camunda:property name="workflow.actions" value="Approve,Deny,RequestChanges" />
+          <camunda:property name="workflow.action.Approve.label" value="Approve" />
+          <camunda:property name="workflow.action.Deny.label" value="Deny" />
+          <camunda:property name="workflow.action.RequestChanges.label" value="Request Changes" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0qv4bb8</bpmn:incoming>
+      <bpmn:incoming>Flow_19ny0dc</bpmn:incoming>
+      <bpmn:incoming>Flow_1lrh51g</bpmn:incoming>
+      <bpmn:incoming>Flow_0ra3px8</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ls6569</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_1dlzc3o">
+      <bpmn:incoming>Flow_1ls6569</bpmn:incoming>
+      <bpmn:outgoing>Flow_02m7wfj</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1qsth3h</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1bpfcx6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="digitalIntake" name="Digital Intake">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionStatusUpdateDelegate" event="start" />
+        <camunda:properties>
+          <camunda:property name="status" value="Draft" />
+          <camunda:property name="workflow.actions" value="Submit" />
+          <camunda:property name="workflow.action.Submit.label" value="Submit" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ufmd9t</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qv4bb8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="correctInformation" name="Correct Information">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionStatusUpdateDelegate" event="start" />
+        <camunda:properties>
+          <camunda:property name="status" value="Info Requested" />
+          <camunda:property name="workflow.actions" value="Resubmit" />
+          <camunda:property name="workflow.action.Resubmit.label" value="Re-Submit" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_02m7wfj</bpmn:incoming>
+      <bpmn:outgoing>Flow_19ny0dc</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_0mtymk1" name="Denied">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionCompletedDelegate" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_19c9a4i</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="DenialPending" name="Pending Permanent Denial">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionStatusUpdateDelegate" event="start" />
+        <camunda:properties>
+          <camunda:property name="status" value="Denied" />
+          <camunda:property name="workflow.actions" value="Undeny" />
+          <camunda:property name="workflow.action.Undeny.label" value="Undo Denial" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1bpfcx6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1lrh51g</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="approved" name="Approved">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_0kbv6bj</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:userTask id="ApprovalPending" name="Pending Permanent Approval">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="status" value="Approved" />
+          <camunda:property name="workflow.actions" value="Unapprove" />
+          <camunda:property name="workflow.action.Unapprove.label" value="Undo Approval" />
+        </camunda:properties>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionStatusUpdateDelegate" event="start" />
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionCompletedDelegate" event="start" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1qsth3h</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ra3px8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Event_1xaeovz" attachedToRef="ApprovalPending">
+      <bpmn:extensionElements />
+      <bpmn:outgoing>Flow_0kbv6bj</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1eoll6u">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1H</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Event_0ba17sq" attachedToRef="DenialPending">
+      <bpmn:extensionElements />
+      <bpmn:outgoing>Flow_19c9a4i</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1inkxze">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1H</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:task id="Activity_12624zp">
+      <bpmn:incoming>Flow_0bb5vkd</bpmn:incoming>
+      <bpmn:outgoing>Flow_1469hna</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0qv4bb8" name="Submit" sourceRef="digitalIntake" targetRef="review">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionSubmitDelegate" event="take" />
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.SimpleTransactionAuditEventDelegate" event="take" />
+        <camunda:properties>
+          <camunda:property name="activity_event_type" value="transaction_submitted" />
+          <camunda:property name="summary" value="Transaction submitted" />
+          <camunda:property name="notification.key" value="ApplicationSubmittedTemplate" />
+          <camunda:property name="notification.parameter.application-id" value="externalId" />
+          <camunda:property name="notification.parameter.portal-url" value="url" />
+          <camunda:property name="notification.parameter.first-name" value="data.personalInformation.firstName" />
+          <camunda:property name="notification.parameter.license-name" value="transactionDefinitionKey" />
+        </camunda:properties>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionNotificationDelegate" event="take" />
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.FormValidationDelegate" event="take" />
+      </bpmn:extensionElements>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_19ny0dc" name="Submit Corrections" sourceRef="correctInformation" targetRef="review" />
+    <bpmn:sequenceFlow id="Flow_1lrh51g" sourceRef="DenialPending" targetRef="review" />
+    <bpmn:sequenceFlow id="Flow_0ra3px8" sourceRef="ApprovalPending" targetRef="review">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionCompletedDelegate" event="take" />
+        <camunda:properties>
+          <camunda:property name="undoCompleted" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1ls6569" sourceRef="review" targetRef="Gateway_1dlzc3o" />
+    <bpmn:sequenceFlow id="Flow_02m7wfj" sourceRef="Gateway_1dlzc3o" targetRef="correctInformation">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionNotificationDelegate" event="take" />
+        <camunda:properties>
+          <camunda:property name="notification.parameter.application-id" value="externalId" />
+          <camunda:property name="notification.parameter.first-name" value="data.personalInformation.firstName" />
+          <camunda:property name="notification.key" value="AdditionalInformationRequestedTemplate" />
+          <camunda:property name="notification.parameter.portal-url" value="url" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == "RequestChanges"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1qsth3h" sourceRef="Gateway_1dlzc3o" targetRef="ApprovalPending">
+      <bpmn:extensionElements>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionNotificationDelegate" event="take" />
+        <camunda:properties>
+          <camunda:property name="notification.parameter.application-id" value="externalId" />
+          <camunda:property name="notification.parameter.first-name" value="data.personalInformation.firstName" />
+          <camunda:property name="notification.key" value="ApplicationApprovedTemplate" />
+          <camunda:property name="notification.parameter.portal-url" value="url" />
+          <camunda:property name="notification.parameter.license-name" value="transactionDefinitionKey" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == "Approve"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1bpfcx6" sourceRef="Gateway_1dlzc3o" targetRef="DenialPending">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="notification.parameter.first-name" value="data.personalInformation.firstName" />
+          <camunda:property name="notification.parameter.application-id" value="externalId" />
+          <camunda:property name="notification.key" value="ApplicationDeniedTemplate" />
+          <camunda:property name="notification.parameter.portal-url" value="url" />
+          <camunda:property name="notification.parameter.license-name" value="transactionDefinitionKey" />
+        </camunda:properties>
+        <camunda:executionListener class="io.nuvalence.workmanager.service.camunda.delegates.TransactionNotificationDelegate" event="take" />
+      </bpmn:extensionElements>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == "Deny"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_19c9a4i" sourceRef="Event_0ba17sq" targetRef="Event_0mtymk1" />
+    <bpmn:sequenceFlow id="Flow_0kbv6bj" sourceRef="Event_1xaeovz" targetRef="approved" />
+    <bpmn:sequenceFlow id="Flow_0m7pf6k" sourceRef="Activity_00to3gt" targetRef="farUserTask" />
+    <bpmn:sequenceFlow id="Flow_1469hna" sourceRef="Activity_12624zp" targetRef="Activity_00to3gt" />
+    <bpmn:exclusiveGateway id="Gateway_1p8ls1v">
+      <bpmn:incoming>Flow_0655wwf</bpmn:incoming>
+      <bpmn:outgoing>Flow_10ottp2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0s385xb</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="activityAgency1" name="Agency First task 2">
+      <bpmn:incoming>Flow_0s385xb</bpmn:incoming>
+    </bpmn:userTask>
+    <bpmn:userTask id="activityAgency2" name="agentFirstTask">
+      <bpmn:incoming>Flow_10ottp2</bpmn:incoming>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_10ottp2" sourceRef="Gateway_1p8ls1v" targetRef="activityAgency2">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == "Deny"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0s385xb" sourceRef="Gateway_1p8ls1v" targetRef="activityAgency1">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == "Approve"}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:task id="Activity_02gp8ep">
+      <bpmn:incoming>Flow_10r0q8g</bpmn:incoming>
+      <bpmn:outgoing>Flow_0655wwf</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0655wwf" sourceRef="Activity_02gp8ep" targetRef="Gateway_1p8ls1v" />
+    <bpmn:subProcess id="Activity_00to3gt">
+      <bpmn:incoming>Flow_1469hna</bpmn:incoming>
+      <bpmn:outgoing>Flow_0m7pf6k</bpmn:outgoing>
+      <bpmn:startEvent id="Event_0axo1yt">
+        <bpmn:outgoing>Flow_095bzzn</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:task id="Activity_1f1cxuq">
+        <bpmn:incoming>Flow_095bzzn</bpmn:incoming>
+        <bpmn:outgoing>Flow_1hf71uj</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:sequenceFlow id="Flow_095bzzn" sourceRef="Event_0axo1yt" targetRef="Activity_1f1cxuq" />
+      <bpmn:task id="Activity_1kdz7si">
+        <bpmn:incoming>Flow_1i331ey</bpmn:incoming>
+        <bpmn:outgoing>Flow_1e7ct4y</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:userTask id="internalUserTask" name="Internal User task">
+        <bpmn:incoming>Flow_1e7ct4y</bpmn:incoming>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_1e7ct4y" sourceRef="Activity_1kdz7si" targetRef="internalUserTask" />
+      <bpmn:endEvent id="Event_1pbq1i5">
+        <bpmn:incoming>Flow_1i1xbpc</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:exclusiveGateway id="Gateway_04kqm14">
+        <bpmn:incoming>Flow_1hf71uj</bpmn:incoming>
+        <bpmn:outgoing>Flow_1i331ey</bpmn:outgoing>
+        <bpmn:outgoing>Flow_1i1xbpc</bpmn:outgoing>
+      </bpmn:exclusiveGateway>
+      <bpmn:sequenceFlow id="Flow_1hf71uj" sourceRef="Activity_1f1cxuq" targetRef="Gateway_04kqm14" />
+      <bpmn:sequenceFlow id="Flow_1i331ey" sourceRef="Gateway_04kqm14" targetRef="Activity_1kdz7si">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == "Approve"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+      <bpmn:sequenceFlow id="Flow_1i1xbpc" sourceRef="Gateway_04kqm14" targetRef="Event_1pbq1i5">
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${action == "Deny"}</bpmn:conditionExpression>
+      </bpmn:sequenceFlow>
+    </bpmn:subProcess>
+    <bpmn:userTask id="unreachableUserTask" name="Non First Task">
+      <bpmn:incoming>Flow_1743yup</bpmn:incoming>
+    </bpmn:userTask>
+    <bpmn:userTask id="farUserTask" name="Far User Task">
+      <bpmn:incoming>Flow_0m7pf6k</bpmn:incoming>
+      <bpmn:outgoing>Flow_1743yup</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1743yup" sourceRef="farUserTask" targetRef="unreachableUserTask" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1nu4i0h">
+      <bpmndi:BPMNShape id="Participant_1frsb2s_di" bpmnElement="Participant_1frsb2s" isHorizontal="true">
+        <dc:Bounds x="160" y="50" width="1140" height="530" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0lyncp3_di" bpmnElement="Lane_0lyncp3" isHorizontal="true">
+        <dc:Bounds x="190" y="205" width="1110" height="375" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_0g1pmd1_di" bpmnElement="Lane_0g1pmd1" isHorizontal="true">
+        <dc:Bounds x="190" y="50" width="1110" height="155" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0k1lavn_di" bpmnElement="Event_0k1lavn">
+        <dc:Bounds x="222" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0vsi9sd_di" bpmnElement="review">
+        <dc:Bounds x="520" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1dlzc3o_di" bpmnElement="Gateway_1dlzc3o" isMarkerVisible="true">
+        <dc:Bounds x="675" y="285" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00gilkt_di" bpmnElement="digitalIntake">
+        <dc:Bounds x="430" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ge07uc_di" bpmnElement="correctInformation">
+        <dc:Bounds x="650" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0mtymk1_di" bpmnElement="Event_0mtymk1">
+        <dc:Bounds x="882" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="883" y="485" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00uz32d_di" bpmnElement="DenialPending">
+        <dc:Bounds x="720" y="420" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1c84zs1_di" bpmnElement="approved">
+        <dc:Bounds x="1052" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1046" y="335" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_18uxkm1_di" bpmnElement="ApprovalPending">
+        <dc:Bounds x="900" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_12624zp_di" bpmnElement="Activity_12624zp">
+        <dc:Bounds x="830" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1p8ls1v_di" bpmnElement="Gateway_1p8ls1v" isMarkerVisible="true">
+        <dc:Bounds x="395" y="385" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1dvfr5s_di" bpmnElement="activityAgency1">
+        <dc:Bounds x="370" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_023ua00" bpmnElement="activityAgency2">
+        <dc:Bounds x="370" y="470" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_02gp8ep_di" bpmnElement="Activity_02gp8ep">
+        <dc:Bounds x="250" y="370" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00to3gt_di" bpmnElement="Activity_00to3gt">
+        <dc:Bounds x="980" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1n8y8z2_di" bpmnElement="farUserTask">
+        <dc:Bounds x="1130" y="90" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0u3vbd7_di" bpmnElement="unreachableUserTask">
+        <dc:Bounds x="1160" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ba17sq_di" bpmnElement="Event_0ba17sq">
+        <dc:Bounds x="802" y="442" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="626" y="465" width="8" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1xaeovz_di" bpmnElement="Event_1xaeovz">
+        <dc:Bounds x="982" y="292" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1ufmd9t_di" bpmnElement="Flow_1ufmd9t">
+        <di:waypoint x="258" y="130" />
+        <di:waypoint x="430" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10r0q8g_di" bpmnElement="Flow_10r0q8g">
+        <di:waypoint x="230" y="145" />
+        <di:waypoint x="230" y="410" />
+        <di:waypoint x="250" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bb5vkd_di" bpmnElement="Flow_0bb5vkd">
+        <di:waypoint x="240" y="112" />
+        <di:waypoint x="240" y="70" />
+        <di:waypoint x="880" y="70" />
+        <di:waypoint x="880" y="90" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qv4bb8_di" bpmnElement="Flow_0qv4bb8">
+        <di:waypoint x="500" y="170" />
+        <di:waypoint x="500" y="310" />
+        <di:waypoint x="520" y="310" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="462" y="221" width="35" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19ny0dc_di" bpmnElement="Flow_19ny0dc">
+        <di:waypoint x="650" y="130" />
+        <di:waypoint x="570" y="130" />
+        <di:waypoint x="570" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="571" y="96" width="57" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1lrh51g_di" bpmnElement="Flow_1lrh51g">
+        <di:waypoint x="720" y="460" />
+        <di:waypoint x="570" y="460" />
+        <di:waypoint x="570" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ra3px8_di" bpmnElement="Flow_0ra3px8">
+        <di:waypoint x="950" y="350" />
+        <di:waypoint x="950" y="540" />
+        <di:waypoint x="540" y="540" />
+        <di:waypoint x="540" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ls6569_di" bpmnElement="Flow_1ls6569">
+        <di:waypoint x="620" y="310" />
+        <di:waypoint x="675" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02m7wfj_di" bpmnElement="Flow_02m7wfj">
+        <di:waypoint x="700" y="285" />
+        <di:waypoint x="700" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qsth3h_di" bpmnElement="Flow_1qsth3h">
+        <di:waypoint x="725" y="310" />
+        <di:waypoint x="900" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bpfcx6_di" bpmnElement="Flow_1bpfcx6">
+        <di:waypoint x="700" y="335" />
+        <di:waypoint x="700" y="378" />
+        <di:waypoint x="770" y="378" />
+        <di:waypoint x="770" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19c9a4i_di" bpmnElement="Flow_19c9a4i">
+        <di:waypoint x="838" y="460" />
+        <di:waypoint x="882" y="460" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0kbv6bj_di" bpmnElement="Flow_0kbv6bj">
+        <di:waypoint x="1018" y="310" />
+        <di:waypoint x="1052" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m7pf6k_di" bpmnElement="Flow_0m7pf6k">
+        <di:waypoint x="1080" y="130" />
+        <di:waypoint x="1130" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1469hna_di" bpmnElement="Flow_1469hna">
+        <di:waypoint x="930" y="130" />
+        <di:waypoint x="980" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10ottp2_di" bpmnElement="Flow_10ottp2">
+        <di:waypoint x="420" y="435" />
+        <di:waypoint x="420" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0s385xb_di" bpmnElement="Flow_0s385xb">
+        <di:waypoint x="420" y="385" />
+        <di:waypoint x="420" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0655wwf_di" bpmnElement="Flow_0655wwf">
+        <di:waypoint x="350" y="410" />
+        <di:waypoint x="395" y="410" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1743yup_di" bpmnElement="Flow_1743yup">
+        <di:waypoint x="1180" y="170" />
+        <di:waypoint x="1180" y="205" />
+        <di:waypoint x="1210" y="205" />
+        <di:waypoint x="1210" y="240" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_17mybdx">
+    <bpmndi:BPMNPlane id="BPMNPlane_1osr1y1" bpmnElement="Activity_00to3gt">
+      <bpmndi:BPMNShape id="Event_0axo1yt_di" bpmnElement="Event_0axo1yt">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1f1cxuq_di" bpmnElement="Activity_1f1cxuq">
+        <dc:Bounds x="340" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_04kqm14_di" bpmnElement="Gateway_04kqm14" isMarkerVisible="true">
+        <dc:Bounds x="595" y="95" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1kdz7si_di" bpmnElement="Activity_1kdz7si">
+        <dc:Bounds x="800" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0d9t5rd_di" bpmnElement="internalUserTask">
+        <dc:Bounds x="1060" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1pbq1i5_di" bpmnElement="Event_1pbq1i5">
+        <dc:Bounds x="602" y="232" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_095bzzn_di" bpmnElement="Flow_095bzzn">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="340" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hf71uj_di" bpmnElement="Flow_1hf71uj">
+        <di:waypoint x="440" y="120" />
+        <di:waypoint x="595" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i331ey_di" bpmnElement="Flow_1i331ey">
+        <di:waypoint x="645" y="120" />
+        <di:waypoint x="800" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1e7ct4y_di" bpmnElement="Flow_1e7ct4y">
+        <di:waypoint x="900" y="120" />
+        <di:waypoint x="1060" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1i1xbpc_di" bpmnElement="Flow_1i1xbpc">
+        <di:waypoint x="620" y="145" />
+        <di:waypoint x="620" y="232" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

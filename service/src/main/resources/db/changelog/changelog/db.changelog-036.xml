@@ -1,0 +1,22 @@
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="owner_user_id_correction" dbms="postgresql" author="jcsuarezm">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM individual_profile
+                WHERE owner_user_id IS NOT NULL
+                AND owner_user_id !~ '^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$'
+            </sqlCheck>
+        </preConditions>
+
+        <sql>
+            ALTER TABLE individual_profile
+            ALTER COLUMN owner_user_id TYPE UUID USING owner_user_id::UUID;
+        </sql>
+    </changeSet>
+</databaseChangeLog>

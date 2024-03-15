@@ -1,0 +1,7 @@
+logging:
+  config: classpath:logback-local.xml
+
+spring:
+  sleuth:
+    sampler:
+      probability: ${OTEL_SAMPLER_PROBABILITY} # Valid values [0.0 - 1.0]

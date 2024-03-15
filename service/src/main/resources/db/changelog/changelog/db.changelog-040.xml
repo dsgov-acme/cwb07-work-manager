@@ -1,0 +1,53 @@
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create_transaction_record_linker_table" author="dortega">
+
+        <createTable tableName="transaction_record_linker">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+
+            <column name="record_definition_key" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="field_mappings" type="JSONB">
+                <constraints nullable="false" />
+            </column>
+            <column name="transaction_definition_id" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="transaction_record_linker_constraints" author="dortega">
+        <addForeignKeyConstraint
+            constraintName="fk_transaction_record_linker_transaction_definition_id"
+            baseTableName="transaction_record_linker"
+            baseColumnNames="transaction_definition_id"
+            referencedTableName="transaction_definition"
+            referencedColumnNames="id"
+            onDelete="CASCADE" />
+
+        <addUniqueConstraint
+            tableName="record_definition"
+            columnNames="record_definition_key"
+            constraintName="uk_record_definition_key" />
+
+        <addForeignKeyConstraint
+            constraintName="fk_transaction_record_linker_record_definition_key"
+            baseTableName="transaction_record_linker"
+            baseColumnNames="record_definition_key"
+            referencedTableName="record_definition"
+            referencedColumnNames="record_definition_key" />
+
+    </changeSet>
+
+    <changeSet id="transaction_definition_allowed_types_identify" author="dortega" dbms="postgresql">
+        <sql> ALTER TABLE transaction_definition_allowed_types REPLICA IDENTITY FULL; </sql>
+    </changeSet>
+</databaseChangeLog>

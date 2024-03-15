@@ -1,0 +1,17 @@
+{
+  "schemaKey": "TestSchema",
+  "name": "Test Transaction Definition",
+  "description": "Test Transaction Definition",
+  "processDefinitionKey": "TestWorkflow",
+  "category": "acceptance_tests",
+  "defaultFormConfigurationKey": "TestFormConfiguration",
+  "defaultStatus": "new",
+  "formConfigurationSelectionRules": [
+    {
+      "task": "string",
+      "viewer": "string",
+      "context": "string",
+      "formConfigurationKey": "string"
+    }
+  ]
+}

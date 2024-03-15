@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: work-manager-cerbos-config
+  namespace: {{ .Values.namespace | default "dsgov" }}
+data:
+  "config.yaml": |-
+    server:
+      httpListenAddr: "127.0.0.1:3592"
+    storage:
+      driver: disk
+      disk:
+        directory: /policies
+        watchForChanges: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: work-manager-cerbos-policies
+  namespace: {{ .Values.namespace | default "dsgov" }}
+data: {{- (.Files.Glob "cerbos-policies/**.yaml").AsConfig | nindent 2}}

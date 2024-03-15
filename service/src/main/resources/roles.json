@@ -1,0 +1,154 @@
+{
+  "name": "work-manager",
+  "roles": [
+    {
+      "applicationRole": "wm:transaction-submitter",
+      "name": "Transaction Submitter",
+      "description": "Can create transactions. Can view & update transactions they submitted.",
+      "group": "work-manager"
+    },
+    {
+      "applicationRole": "wm:transaction-admin",
+      "name": "Transaction Admin",
+      "description": "Can create transactions. Can create & update all transactions.",
+      "group": "work-manager",
+      "capabilities": [
+        "transaction-management-read",
+        "transaction-management-write",
+        "transaction-conversation-create"
+      ]
+    },
+    {
+      "applicationRole": "wm:transaction-config-admin",
+      "name": "Transaction Configuration Admin",
+      "description": "Can create & update transaction definitions, workflow configurations, dynamic schemas, and form, configurations.",
+      "group": "work-manager",
+      "capabilities": [
+        "admin-console",
+        "transaction-config",
+        "transaction-set-config",
+        "schema-config"
+      ]
+    },
+    {
+      "applicationRole": "wm:agency-profile-admin",
+      "name": "Agency Profile Admin",
+      "description": "Can create, update and delete any profile type.",
+      "group": "work-manager",
+      "capabilities": [
+        "individual-profile-create",
+        "individual-profile-read",
+        "individual-profile-update",
+        "individual-profile-invite",
+        "individual-profile-link-update",
+        "individual-profile-link-read",
+        "individual-profile-link-delete",
+        "individual-profile-invitation-claim",
+        "individual-profile-invitation-read",
+        "individual-profile-invitation-delete",
+        "employer-profile-create",
+        "employer-profile-read",
+        "employer-profile-update",
+        "employer-profile-invite",
+        "employer-profile-link-update",
+        "employer-profile-link-read",
+        "employer-profile-link-delete",
+        "employer-profile-invitation-claim",
+        "employer-profile-invitation-read",
+        "employer-profile-invitation-delete"
+      ]
+    },
+    {
+      "applicationRole": "wm:individual-admin",
+      "name": "Individual Admin",
+      "description": "Can create, update and delete individual profiles.",
+      "group": "work-manager",
+      "capabilities": [
+        "individual-profile-read",
+        "individual-profile-update",
+        "individual-profile-invite",
+        "individual-profile-link-update",
+        "individual-profile-link-read",
+        "individual-profile-link-delete",
+        "individual-profile-invitation-claim",
+        "individual-profile-invitation-read",
+        "individual-profile-invitation-delete"
+      ]
+    },
+    {
+      "applicationRole": "wm:individual-user",
+      "name": "Individual User",
+      "description": "Can view individual profiles.",
+      "group": "work-manager",
+      "capabilities": [
+        "individual-profile-read"
+      ]
+    },
+    {
+      "applicationRole": "wm:individual-link-subject",
+      "name": "Individual Link Subject",
+      "description": "Can view individual profile links.",
+      "group": "work-manager",
+      "capabilities": [
+        "individual-profile-link-read"
+      ]
+    },
+    {
+      "applicationRole": "wm:public-profile-user",
+      "name": "Public Profile User",
+      "description": "Can claim profile invitations.",
+      "group": "work-manager",
+      "capabilities": [
+        "individual-profile-invitation-claim",
+        "employer-profile-invitation-claim"
+      ]
+    },
+    {
+      "applicationRole": "wm:employer-admin",
+      "name": "Employer Admin",
+      "description": "Can create, update and delete employer profiles.",
+      "group": "work-manager",
+      "capabilities": [
+        "employer-profile-read",
+        "employer-profile-update",
+        "employer-profile-invite",
+        "employer-profile-link-update",
+        "employer-profile-link-read",
+        "employer-profile-link-delete",
+        "employer-profile-invitation-claim",
+        "employer-profile-invitation-read",
+        "employer-profile-invitation-delete"
+      ]
+    },
+    {
+      "applicationRole": "wm:employer-user",
+      "name": "Employer User",
+      "description": "Can view employer profiles.",
+      "group": "work-manager",
+      "capabilities": [
+        "employer-profile-read"
+      ]
+    },
+    {
+      "applicationRole": "wm:employer-link-subject",
+      "name": "Employer Link Subject",
+      "description": "Can view employer profile links.",
+      "group": "work-manager",
+      "capabilities": [
+        "employer-profile-link-read"
+      ]
+    },
+    {
+      "applicationRole": "wm:record-submitter",
+      "name": "Record Submitter",
+      "description": "Can create records. Can view & update records they submitted.",
+      "group": "work-manager"
+    },
+    {
+      "applicationRole": "wm:record-admin",
+      "name": "Record Admin",
+      "description": "Can create records. Can create & update all records.",
+      "group": "work-manager"
+    }
+  ]
+}

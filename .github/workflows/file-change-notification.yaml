@@ -1,0 +1,25 @@
+name: File Change Notification
+
+on:
+  push:
+    paths:
+      - 'skaffold.yaml'
+      - 'helm/work-manager/values.demo.yaml'
+      - 'helm/work-manager/values.dev.yaml'
+      - 'helm/work-manager/values.local.yaml'
+
+    branches:    
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Notify on File Change
+      run: python .github/scripts/notify_on_file_change.py
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.DSGOV_SLACK_WEBHOOK }}

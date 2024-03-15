@@ -1,0 +1,53 @@
+<databaseChangeLog
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd"
+    objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="create_record_definition_table" author="dortega">
+
+        <createTable tableName="record_definition">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false" />
+            </column>
+            <column name="record_definition_key" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="varchar(1024)" />
+            <column name="schema_key" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="expiration_duration" type="varchar(64)" />
+            <column name="created_by" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="created_timestamp" type="DATETIME"
+                defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_updated_by" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_updated_timestamp" type="DATETIME"
+                defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+
+
+        <addForeignKeyConstraint constraintName="fk_record_definition_schema_key"
+            baseTableName="record_definition"
+            baseColumnNames="schema_key"
+            referencedTableName="dynamic_schema"
+            referencedColumnNames="key" />
+
+    </changeSet>
+
+    <changeSet id="create_key_uniqueness_record_definition" dbms="postgresql" author="dortega">
+        <sql> CREATE UNIQUE INDEX record_definition_key_uniqueness ON record_definition
+            (LOWER(record_definition_key)); </sql>
+    </changeSet>
+</databaseChangeLog>

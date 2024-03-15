@@ -1,0 +1,90 @@
+{
+  "key": "BasicSchema",
+  "name": "Basic schema",
+  "attributes": [
+    {
+      "name": "firstName",
+      "type": "String",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "lastName",
+      "type": "String",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "email",
+      "type": "String",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "countryCode",
+      "type": "String",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "address",
+      "type": "String",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "employmentStatus",
+      "type": "String",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "company",
+      "type": "String",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "isMailingAddressNeeded",
+      "type": "Boolean",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "age",
+      "type": "Integer",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "document",
+      "type": "Document",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "dateOfBirth",
+      "type": "LocalDate",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "officeInfo",
+      "type": "DynamicEntity",
+      "entitySchema": "OfficeInfo",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "relativeDate",
+      "type": "LocalDate",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "someDate",
+      "type": "LocalDate",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "officeInfoList",
+      "type": "List",
+      "contentType": "DynamicEntity",
+      "entitySchema": "OfficeInfo",
+      "attributeConfigurations": []
+    },
+    {
+      "name": "strings",
+      "type": "List",
+      "contentType": "String",
+      "attributeConfigurations": []
+    }
+  ]
+}

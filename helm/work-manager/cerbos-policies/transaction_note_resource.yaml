@@ -1,0 +1,24 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+  resource: transaction-note
+  rules:
+    - actions: ["create"]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW
+
+    - actions: ["view"]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW
+
+    - actions: [ "update" ]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW
+
+    - actions: [ "delete" ]
+      roles:
+        - transaction-admin
+      effect: EFFECT_ALLOW

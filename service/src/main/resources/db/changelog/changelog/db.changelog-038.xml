@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="create_related_party_table" author="jcsuarezm">
+        <createTable tableName="related_party">
+            <column name="profile_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="profile_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey tableName="related_party" columnNames="profile_type, profile_id"/>
+    </changeSet>
+
+    <changeSet id="add_new_subject_fields_to_transaction" author="jcsuarezm">
+        <addColumn tableName="transaction">
+            <column name="subject_profile_id" type="uuid">
+                <constraints nullable="true"/>
+            </column>
+            <column name="subject_profile_type" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="fk_related_party_transaction_related_party" author="jcsuarezm">
+        <addColumn tableName="related_party">
+            <column name="transaction_id_additional_parties" type="varchar(36)">
+                <constraints nullable="true"
+                             foreignKeyName="fk_related_party_transaction"
+                             referencedTableName="transaction"
+                             referencedColumnNames="id"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="add_subject_type_to_transaction_definition" author="jcsuarezm">
+        <addColumn tableName="transaction_definition">
+            <column name="subject_type" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="create_allowed_types_table" author="jcsuarezm">
+        <createTable tableName="transaction_definition_allowed_types">
+            <column name="transaction_definition_id" type="varchar(36)">
+                <constraints nullable="false" />
+            </column>
+            <column name="allowed_type" type="varchar(255)" />
+        </createTable>
+        <addForeignKeyConstraint constraintName="fk_transaction_definition_allowed_types"
+                                 baseTableName="transaction_definition_allowed_types" baseColumnNames="transaction_definition_id"
+                                 referencedTableName="transaction_definition" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="make-ssn-nullable-individual-profile" author="jcsuarezm">
+        <dropNotNullConstraint tableName="individual_profile" columnName="ssn" columnDataType="varchar(255)"/>
+    </changeSet>
+
+
+    <changeSet id="migrate_old_data" dbms="postgresql" author="jcsuarezm">
+        <sqlFile path="../../../migrate_old_data.sql"
+                 relativeToChangelogFile="true"
+                 splitStatements="false"
+                 stripComments="false"/>
+    </changeSet>
+
+</databaseChangeLog>

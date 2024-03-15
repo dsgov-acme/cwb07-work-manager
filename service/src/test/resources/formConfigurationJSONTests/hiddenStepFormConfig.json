@@ -1,0 +1,47 @@
+{
+  "components": [
+    {
+      "key": "personalInformation",
+      "input": false,
+      "props": {},
+      "components": [
+        {
+          "key": "personalInformation.firstName",
+          "input": true,
+          "props": {
+            "required": true
+          }
+        }
+      ]
+    },
+    {
+      "key": "jobInfo",
+      "input": false,
+      "props": {},
+      "components": [
+        {
+          "key": "jobInfo.company",
+          "input": true,
+          "props": {
+            "required": true
+          }
+        },
+        {
+          "key": "nuverialLogicValidator",
+          "type": "nuverialLogicValidator",
+          "input": false,
+          "props": {
+            "modalTitle": "some logic",
+            "formErrorLabel": "Error"
+          },
+          "expressions": {
+            "props.required": "model?.jobInfo?.company !== 'someCompany'"
+          }
+        }
+      ],
+      "expressions": {
+        "hide": "model.personalInformation?.firstName === \"John\""
+      }
+    }
+  ]
+}
