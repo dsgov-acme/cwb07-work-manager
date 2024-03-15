@@ -9,12 +9,12 @@ env:
   ALLOWED_ORIGINS: "http://localhost:4200, http://localhost:4201, https://api.cwb07.dsgov.demo.nuvalence.io, https://agency.cwb07.dsgov.demo.nuvalence.io, https://public.cwb07.dsgov.demo.nuvalence.io, https://employer.cwb07.dsgov.demo.nuvalence.io"
   CERBOS_URI: "127.0.0.1:3592"
   DB_CONNECTION_URL: "jdbc:postgresql://127.0.0.1:5432/cwb07-prod-work-manager-db"
-  DB_USERNAME: "${sm://projects/cwb07-prod/secrets/cwb07-prod-db-user/versions/latest}"
-  DB_PASSWORD: "${sm://projects/cwb07-prod/secrets/cwb07-prod-db-pass/versions/latest}"
-  GCP_PROJECT_ID: "cwb07-prod"
+  DB_USERNAME: "${sm://projects/cwb07-prod-b74b/secrets/cwb07-prod-db-user/versions/latest}"
+  DB_PASSWORD: "${sm://projects/cwb07-prod-b74b/secrets/cwb07-prod-db-pass/versions/latest}"
+  GCP_PROJECT_ID: "cwb07-prod-b74b"
   VERTEX_AI_LOCATION: "us-west1"
-  SELF_SIGN_PUBLIC_KEY: "${sm://projects/cwb07-prod/secrets/cwb07-self-signed-token-public-key/versions/latest}"
-  SELF_SIGN_PRIVATE_KEY: "${sm://projects/cwb07-prod/secrets/cwb07-self-signed-token-private-key/versions/latest}"
+  SELF_SIGN_PUBLIC_KEY: "${sm://projects/cwb07-prod-b74b/secrets/cwb07-self-signed-token-public-key/versions/latest}"
+  SELF_SIGN_PRIVATE_KEY: "${sm://projects/cwb07-prod-b74b/secrets/cwb07-self-signed-token-private-key/versions/latest}"
   USER_MANAGEMENT_BASE_URL: "http://cwb07-user-management/um"
   TOKEN_PRIVATE_KEY_SECRET: "cwb07-self-signed-token-private-key"
   TOKEN_ISSUER: "cwb07"
@@ -26,4 +26,4 @@ env:
   PUBSUB_EMULATOR_HOST: false # set actual "host:port" to enable or false to disable
   PUBSUB_EMULATOR_ENABLED: false # set to true to enable emulator
   # cwb07-events publisher topics separated by comma
-  PUBLISHER_TOPICS: projects/cwb07-prod/topics/DOCUMENT_PROCESSING_INITIATION,projects/cwb07-prod/topics/APPLICATION_ROLE_REPORTING,projects/cwb07-prod/topics/NOTIFICATION_REQUESTS,projects/cwb07-prod/topics/AUDIT_EVENTS_RECORDING
+  PUBLISHER_TOPICS: projects/cwb07-prod-b74b/topics/DOCUMENT_PROCESSING_INITIATION,projects/cwb07-prod-b74b/topics/APPLICATION_ROLE_REPORTING,projects/cwb07-prod-b74b/topics/NOTIFICATION_REQUESTS,projects/cwb07-prod-b74b/topics/AUDIT_EVENTS_RECORDING

@@ -6,10 +6,10 @@ profiles:
   - name: local
     build:
       googleCloudBuild:
-        projectId: cwb07-services
+        projectId: cwb07-shared-services-7b30
         gradleImage: gradle:8.2.1-jdk17-alpine
       artifacts:
-        - image: us-east4-docker.pkg.dev/cwb07-services/application/cwb07-work-manager
+        - image: us-west1-docker.pkg.dev/cwb07-shared-services-7b30/application/cwb07-work-manager
           jib:
             type: gradle
             project: service
@@ -23,8 +23,8 @@ profiles:
           chartPath: helm/work-manager
           # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
           setValueTemplates:
-            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
-            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+            image.repository: "{{.IMAGE_REPO_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}"
+            image.tag: "{{.IMAGE_TAG_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}"
           setValues:
             environment: local
           valuesFiles:
@@ -76,10 +76,10 @@ profiles:
   - name: dev
     build:
       googleCloudBuild:
-        projectId: cwb07-services
+        projectId: cwb07-shared-services-7b30
         gradleImage: gradle:8.2.1-jdk17-alpine
       artifacts:
-        - image: us-east4-docker.pkg.dev/cwb07-services/application/cwb07-work-manager
+        - image: us-west1-docker.pkg.dev/cwb07-shared-services-7b30/application/cwb07-work-manager
           jib:
             type: gradle
             project: service
@@ -93,8 +93,8 @@ profiles:
           chartPath: helm/work-manager
           # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
           setValueTemplates:
-            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
-            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+            image.repository: "{{.IMAGE_REPO_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}"
+            image.tag: "{{.IMAGE_TAG_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}"
           setValues:
             environment: dev
           valuesFiles:
@@ -103,10 +103,10 @@ profiles:
   - name: prod
     build:
       googleCloudBuild:
-        projectId: cwb07-services
+        projectId: cwb07-shared-services-7b30
         gradleImage: gradle:8.2.1-jdk17-alpine
       artifacts:
-        - image: us-east4-docker.pkg.dev/cwb07-services/application/cwb07-work-manager
+        - image: us-west1-docker.pkg.dev/cwb07-shared-services-7b30/application/cwb07-work-manager
           jib:
             type: gradle
             project: service
@@ -120,8 +120,8 @@ profiles:
           chartPath: helm/work-manager
           # Ref: https://skaffold.dev/docs/deployers/helm/#sanitizing-the-artifact-name-from-invalid-go-template-characters
           setValueTemplates:
-            image.repository: "{{.IMAGE_REPO_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
-            image.tag: "{{.IMAGE_TAG_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_east4_docker_pkg_dev_cwb07_services_application_cwb07_work_manager}}"
+            image.repository: "{{.IMAGE_REPO_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}"
+            image.tag: "{{.IMAGE_TAG_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}@{{.IMAGE_DIGEST_us_west1_docker_pkg_dev_cwb07_shared_services_7b30_application_cwb07_work_manager}}"
           setValues:
             environment: prod
           valuesFiles:
